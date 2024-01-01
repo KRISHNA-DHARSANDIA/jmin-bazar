@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "752883044184",
+    "project_id": "farmsale-001",
+    "storage_bucket": "farmsale-001.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:752883044184:android:82464bc8870858b795df2d",
+        "android_client_info": {
+          "package_name": "com.farmsale"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD53os3xIwZgU-qHDhw8IHSdSlKXP3O9jk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
