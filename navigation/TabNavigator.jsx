@@ -49,8 +49,8 @@ const TabButton = (props) => {
                 <Text style={[styles.labeltxt, focused && styles.selectedLabel]}>{item.label}</Text>
             </View>
         </TouchableOpacity>
-    )
-}
+    );
+};
 
 export default function TabNavigator() {
     return (
@@ -64,7 +64,7 @@ export default function TabNavigator() {
                     position: 'absolute',
                     bottom: 0,
                     right: 0,
-                    left: 0,
+                    left: 0, 
                     borderTopLeftRadius: 20,
                     borderTopRightRadius: 20,
                 },
@@ -82,8 +82,8 @@ export default function TabNavigator() {
                 )
             })}
         </Tab.Navigator>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -91,7 +91,6 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         alignItems: 'center',
         position: 'relative',
-        paddingLeft: 12,
     },
     labeltxt: {
         fontSize: 12,
@@ -100,7 +99,7 @@ const styles = StyleSheet.create({
     btn: {
         flexDirection: 'column',
         alignItems: 'center',
-        paddingHorizontal: 12,
+        paddingHorizontal: 10,
         paddingVertical: 14,
         borderBottomLeftRadius: 22,
         borderBottomRightRadius: 20,

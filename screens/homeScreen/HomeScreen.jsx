@@ -15,7 +15,7 @@ const HomeScreen = () => {
         <Navbar />
       </View>
       <View style={[styles.container]}>
-        <Text>Home screen 🥲sw🥲</Text>
+        <Text style={[styles.textnew]}>Home screen</Text>
       </View>
     </View>
   );
@@ -32,4 +32,7 @@ const styles = StyleSheet.create({
   copyname: {
 
   },
+  textnew: {
+    color: 'red',
+  }
 });

@@ -4,13 +4,16 @@ import React from 'react';
 //Navigation
 import { NavigationContainer } from '@react-navigation/native';
 import AppNavigator from './navigation/AppNavigator';
-
+import { TamaguiProvider } from 'tamagui'
+import config from './tamagui.config'
 
 const App = () => {
   return (
-    <NavigationContainer>
-      <AppNavigator/>
-    </NavigationContainer>
+    <TamaguiProvider config={config}>
+      <NavigationContainer>
+        <AppNavigator />
+      </NavigationContainer>
+    </TamaguiProvider>
   );
 }
 

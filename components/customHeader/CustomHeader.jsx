@@ -42,9 +42,9 @@ const styles = StyleSheet.create({
     mainNav: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        top: 16,
+        top: 0,
         marginBottom: 5,
-        height:30,
+        height:55,
         backgroundColor:'red',
     },
     navleft: {

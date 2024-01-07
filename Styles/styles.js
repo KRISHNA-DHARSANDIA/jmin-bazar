@@ -5,12 +5,11 @@ import Colors from '../constants/Colors';
 import { transparent } from 'react-native-paper/lib/typescript/styles/themes/v2/colors';
 
 // Get the screen dimensions
-const screenWidth = Dimensions.get('window').width; // For Safty Purpose
-const screenHeight = Dimensions.get('window').height; // for Safty Purpose
+const { width, height } = Dimensions.get('window');
 
 const Styles = StyleSheet.create({
-    screenWidth: { width: screenWidth },
-    screenHeight: { height: screenHeight },
+    screenWidth: { width: width },
+    screenHeight: { height: height },
     container: {
         flex: 1,
     },
@@ -34,47 +33,48 @@ const Styles = StyleSheet.create({
         paddingBottom: 100,
     },
 
-    //User Info Screen Style
+    //User info
     UsIMainView: {
         flex: 1,
     },
-    UsIbtnView: {
-        width: screenWidth,
-        height: 50,
-        justifyContent: 'center',
-        alignItems: 'flex-end',
-    },
-    UsILoginbtn: {
-        position: 'absolute',
-        padding: 10,
-        borderRadius: 5,
-    },
-    UsILoginbtntxt: {
-        color: 'black',
-        fontSize: 14,
-        fontWeight: '500',
-    },
-    UsICreateProbtn: {
-        backgroundColor: 'red',
-        height: 50,
+    UsiTopcontaner: {
+        flex: 5,
+        backgroundColor: 'green',
         justifyContent: 'center',
         alignItems: 'center',
-        borderRadius: 10,
-        width: screenWidth - 45,
     },
-    UsICreateProViw: {
-        width: screenWidth,
-        height: 70,
-        justifyContent: 'center',
-        alignItems: 'center',
+    UsiBtnregister: {
+        textAlign: 'center',
+    },
+    Usimainbnttxt: {
+        fontSize: 18,
+        textAlign: 'center',
+        fontWeight: 'bold',
+        color: 'blue',
+    },
+    UsimainbnttxtConatiner: {
+        marginVertical: 10,
+    },
+    UsiSubbnttxt: {
+        fontSize: 16,
+        textAlign: 'center',
+        marginHorizontal: width * 0.1,
+    },
+    UsiDownContainer: {
+        flex: 5,
         backgroundColor: 'blue',
     },
-    UsICreateProbtntxt:{
-        fontSize:16,
-        fontWeight:'700',
-        color:'white',
-        letterSpacing:0.4,
+    USiListCollection: {
+        width: width,
+        borderRadius:0,
+    },
+    USiListIcon: {
+        width:10,
+    },
+    Usilogin:{
+        marginTop:0,
     }
-})
+
+});
 
 export default Styles;
