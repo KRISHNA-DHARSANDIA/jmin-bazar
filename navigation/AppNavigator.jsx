@@ -2,7 +2,7 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import FirstLoad from '../screens/firstLoad/FirstLoad';
-import TabNavigator from '../navigation/TabNavigator';
+import TabNavigator from './TabNavigator';
 
 const Stack = createNativeStackNavigator();
 

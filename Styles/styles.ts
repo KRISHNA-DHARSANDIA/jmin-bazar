@@ -1,8 +1,6 @@
 /* eslint-disable prettier/prettier */
-import React from 'react';
 import { StyleSheet, Dimensions } from "react-native";
 import Colors from '../constants/Colors';
-import { transparent } from 'react-native-paper/lib/typescript/styles/themes/v2/colors';
 
 // Get the screen dimensions
 const { width, height } = Dimensions.get('window');
@@ -39,7 +37,6 @@ const Styles = StyleSheet.create({
     },
     UsiTopcontaner: {
         flex: 5,
-        backgroundColor: 'green',
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -50,7 +47,7 @@ const Styles = StyleSheet.create({
         fontSize: 18,
         textAlign: 'center',
         fontWeight: 'bold',
-        color: 'blue',
+        color: '#0090ff',
     },
     UsimainbnttxtConatiner: {
         marginVertical: 10,
@@ -62,7 +59,6 @@ const Styles = StyleSheet.create({
     },
     UsiDownContainer: {
         flex: 5,
-        backgroundColor: 'blue',
     },
     USiListCollection: {
         width: width,
@@ -73,8 +69,61 @@ const Styles = StyleSheet.create({
     },
     Usilogin:{
         marginTop:0,
-    }
+    },
 
+    //User Auth
+    AUcontentContainer: {
+        margin:20,
+        flex: 1,
+    },
+    UAmainToptxtConatienr:{
+        marginBottom:20,
+    },
+    UAmainText:{
+        fontSize:20,
+        fontWeight:'600',
+        color:Colors.black,
+    },
+    AUPNuminput: {
+        fontSize: 14,
+        backgroundColor: 'white',
+        width: 250,
+        height: 20,
+        paddingHorizontal:10,
+        paddingTop: 0,
+        paddingBottom:0,
+        borderLeftWidth:2,
+        borderColor:'#cfcfcf',
+        marginBottom:6,
+    },
+    AUtxtgeneral:{
+        marginBottom:6,
+        flexDirection:'row',
+    },
+    AUNuminputbox:{
+        borderColor:'blue',
+        borderWidth:2,
+        padding:2,
+        paddingLeft:6,
+        marginVertical:10,
+    },
+    UAContinueBtn:{
+        height:42,
+        backgroundColor:'#83bcf0',
+        marginVertical:2,
+        justifyContent:'center',
+        alignItems:'center',
+        borderRadius:6,
+    },
+    UAContinueBtntxt:{
+        width:100,
+        fontSize:18,
+        color:Colors.white,
+        fontWeight:'600',
+    },
+    UADropdownSelector:{
+        marginRight:10,
+    },
 });
 
 export default Styles;

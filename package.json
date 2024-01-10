@@ -10,6 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@gorhom/bottom-sheet": "4",
     "@react-native-community/blur": "^4.3.2",
     "@react-native-community/netinfo": "^11.2.1",
     "@react-native-community/viewpager": "^5.0.11",

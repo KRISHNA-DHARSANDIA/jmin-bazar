@@ -1,4 +1,6 @@
+/* eslint-disable react/react-in-jsx-scope */
 /* eslint-disable prettier/prettier */
+
 import {
     Text,
     StyleSheet,
@@ -6,9 +8,7 @@ import {
     SafeAreaView,
     TouchableOpacity,
 } from 'react-native';
-import React, { Component } from 'react';
 import Icon from 'react-native-vector-icons/EvilIcons';
-import { useNavigation } from '@react-navigation/native';
 
 const CustomHeader = ({ title }) => {
     return (
@@ -44,8 +44,8 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         top: 0,
         marginBottom: 5,
-        height:55,
-        backgroundColor:'red',
+        height: 55,
+        // backgroundColor: 'red',
     },
     navleft: {
         flexDirection: 'row',
@@ -58,10 +58,10 @@ const styles = StyleSheet.create({
     },
     leftbtn: {
         marginLeft: 14,
-        justifyContent:'center',
+        justifyContent: 'center',
     },
-    leftcontent:{
-        justifyContent:'center',
+    leftcontent: {
+        justifyContent: 'center',
     },
     notifibtn: {
         marginLeft: 16,
@@ -70,11 +70,11 @@ const styles = StyleSheet.create({
         width: 100,
         height: 25,
         justifyContent: 'center',
-        marginHorizontal:10,
+        marginHorizontal: 10,
     },
     titletxtmain: {
         color: 'hsl(217, 71%, 53%)',
         fontWeight: '600',
-        fontSize:16,
+        fontSize: 16,
     },
 });

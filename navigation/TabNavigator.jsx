@@ -1,25 +1,59 @@
 /* eslint-disable prettier/prettier */
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { StyleSheet, Text, TouchableOpacity, View, Button } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Icon, { Icons } from '../assets/Icon/Icons';
 import Colors from '../constants/Colors';
 import * as Animatable from 'react-native-animatable';
+import { NavigationContainer } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 
 //screen
 import HomeScreen from '../screens/homeScreen/HomeScreen';
 import UserInfo from '../screens/userInfo/UserInfo';
 import Views from '../screens/Views';
 import UserLike from '../screens/UserLike';
+import Tab1Screen from '../screens/Tab1Screen';
+
 
 const TabArr = [
     { route: 'HomeScreen', label: 'Home', type: Icons.Ionicons, activeIcon: 'home', inActiveIcon: 'home-outline', component: HomeScreen, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite },
-    { route: 'Views', label: 'Activity', type: Icons.AntDesign, activeIcon: 'clockcircle', inActiveIcon: 'clockcircleo', component: Views, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite },
     { route: 'UserLike', label: 'Like', type: Icons.MaterialCommunityIcons, activeIcon: 'heart-plus', inActiveIcon: 'heart-plus-outline', component: UserLike, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite },
+    {
+        route: 'Search', label: 'Activity', type: Icons.Feather, activeIcon: 'search',
+        inActiveIcon: 'search', component: Tab1Screen, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite,
+    },
+    { route: 'Views', label: 'Activity', type: Icons.AntDesign, activeIcon: 'clockcircle', inActiveIcon: 'clockcircleo', component: Views, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite },
     { route: 'UserInfo', label: 'Profile', type: Icons.FontAwesome, activeIcon: 'user-circle', inActiveIcon: 'user-circle-o', component: UserInfo, color: Colors.primaryMoreTransLite, alphaClr: Colors.primaryMoreTransLite },
 ];
 
 const Tab = createBottomTabNavigator();
+
+const CustomTabBarButton = ({ children, onPress }) => (
+    <TouchableOpacity
+        style={{
+            top: -30,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: '#f5f6fb',
+            borderRadius: 35,
+            width: 70,
+            height: 70,
+            ...styles.shadow,
+        }}
+        onPress={onPress}
+    >
+        <View style={{
+            width: 60,
+            height: 60,
+            borderRadius: 35,
+            backgroundColor: '#01b862',
+        }}>
+            {children}
+        </View>
+    </TouchableOpacity>
+);
+
 
 
 const TabButton = (props) => {
@@ -53,37 +87,52 @@ const TabButton = (props) => {
 };
 
 export default function TabNavigator() {
+
     return (
-        <Tab.Navigator
-            shifting={true}
-            style={styles.Navigator}
-            screenOptions={{
-                headerShown: false,
-                tabBarStyle: {
-                    height: 66,
-                    position: 'absolute',
-                    bottom: 0,
-                    right: 0,
-                    left: 0, 
-                    borderTopLeftRadius: 20,
-                    borderTopRightRadius: 20,
-                },
-            }}
-        >
-            {TabArr.map((item, index) => {
-                return (
-                    <Tab.Screen key={index} name={item.route}
+            <Tab.Navigator
+                shifting={true}
+                screenOptions={{
+                    headerShown: false,
+                    tabBarStyle: {
+                        height: 66,
+                        position: 'absolute',
+                        bottom: 0,
+                        right: 0,
+                        left: 0,
+                        borderTopLeftRadius: 20,
+                        borderTopRightRadius: 20,
+                    },
+                }}
+            >
+                {TabArr.map((item, index) => (
+                    <Tab.Screen
+                        key={index}
+                        name={item.route}
                         component={item.component}
                         options={{
                             tabBarShowLabel: false,
-                            tabBarButton: (props) => <TabButton {...props} item={item} />
+                            tabBarIcon: ({ focused }) => (
+                                <Icon size={26} type={item.type} name={focused ? item.activeIcon : item.inActiveIcon}
+                                    style={{
+                                        width: 30,
+                                        height: 30,
+                                        color: 'white',
+                                    }}
+                                />
+                            ),
+                            tabBarButton: (props) => (
+                                item.route === 'Search' ? (
+                                    <CustomTabBarButton {...props} />
+                                ) : (
+                                    <TabButton {...props} item={item} />
+                                )
+                            ),
                         }}
                     />
-                )
-            })}
-        </Tab.Navigator>
-    );
-};
+                ))}
+            </Tab.Navigator>
+        );
+}
 
 const styles = StyleSheet.create({
     container: {
@@ -104,4 +153,4 @@ const styles = StyleSheet.create({
         borderBottomLeftRadius: 22,
         borderBottomRightRadius: 20,
     },
-})
+});

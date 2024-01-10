@@ -10,7 +10,7 @@ const screenHeight = Dimensions.get('window').height;
 
 const HomeScreen = () => {
   return (
-    <View style={{ width: screenWidth, height: screenHeight }}>
+    <View style={{ width: screenWidth, height: screenHeight,backgroundColor:'#f5f6fb' }}>
       <View>
         <Navbar />
       </View>
