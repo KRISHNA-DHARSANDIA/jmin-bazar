@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
-import React, { useState, useCallback, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, BackHandler } from 'react-native';
 //import auth from '@react-native-firebase/auth';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Styles from '../../Styles/styles';
@@ -34,6 +34,16 @@ const UserInfo = () => {
   const handleOpenPress = () => {
     bottomSheetRef.current?.present();
   };
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+      dismiss(); // Dismiss the bottom sheet modal
+      return true; 
+    });
+
+    return () => {
+      backHandler.remove();
+    };
+  }, [dismiss]);
 
   return (
     <SafeAreaView style={[Styles.screenHeight, { flex: 1 }]}>
