@@ -3,7 +3,6 @@ import React, { useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, BackHandler } from 'react-native';
 //import auth from '@react-native-firebase/auth';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Styles from '../../Styles/styles';
 import Icon, { Icons } from '../../assets/Icon/Icons';
 import { ChevronRight, MessageSquare, Settings, Star, LogIn, LogOut, Lock } from '@tamagui/lucide-icons';
 import {
@@ -12,6 +11,7 @@ import {
   XStack,
   YGroup,
 } from 'tamagui';
+import { Styles } from '../../Styles/GetTamaguiStyles';
 
 //bottom Sheet
 import { BottomSheetModal, useBottomSheetModal } from '@gorhom/bottom-sheet';
@@ -37,7 +37,7 @@ const UserInfo = () => {
   useEffect(() => {
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
       dismiss(); // Dismiss the bottom sheet modal
-      return true; 
+      return true;
     });
 
     return () => {
@@ -70,7 +70,7 @@ const UserInfo = () => {
           </View>
           {/* button List of FeedBack and Logout */}
           <View style={Styles.UsiDownContainer}>
-            <View style={Styles.UsICreateProViw}>
+            <View>
               <View>
                 <XStack $sm={{ flexDirection: 'column' }} paddingHorizontal="$0" space>
                   <ListCollectionFeed />

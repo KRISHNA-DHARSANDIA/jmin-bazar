@@ -17,10 +17,10 @@ import Icon from 'react-native-vector-icons/Entypo';
 // import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 // type WelcomeProps = NativeStackScreenProps<RootStackParamList, 'Welcome'>
+const screenHeight = Dimensions.get('window').height;
+const screenWidth = Dimensions.get('window').width;
 
 const Welcome = ({navigation}) => {
-  const screenHeight = Dimensions.get('window').height;
-  const screenWidth = Dimensions.get('window').width;
   return (
     <SafeAreaView>
       <View

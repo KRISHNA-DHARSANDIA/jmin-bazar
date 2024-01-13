@@ -6,7 +6,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import AppNavigator from './navigation/AppNavigator';
 import { TamaguiProvider } from 'tamagui';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import config from './tamagui.config'
+import config from './tamagui.config';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
 const App = () => {

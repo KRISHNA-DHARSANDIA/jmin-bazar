@@ -23,6 +23,7 @@
     "@tamagui/config": "^1.82.6",
     "@tamagui/list-item": "^1.82.5",
     "@tamagui/lucide-icons": "^1.82.5",
+    "@tamagui/react-native-media-driver": "^1.84.2",
     "firebase": "^10.7.1",
     "lottie-react-native": "^6.4.1",
     "react": "18.2.0",

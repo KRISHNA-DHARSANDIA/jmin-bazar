@@ -3,12 +3,14 @@
 // for react-native only: @tamagui/config/v2-native
 import {config} from '@tamagui/config/v2';
 import {createTamagui} from 'tamagui';
-const tamaguiConfig = createTamagui(config);
 
-type Conf = typeof tamaguiConfig;
+const appConfig = createTamagui(config);
+
+export type AppConfig = typeof appConfig
 
 declare module 'tamagui' {
-  interface TamaguiCustomConfig extends Conf {}
+  interface TamaguiCustomConfig extends AppConfig {}
 }
-export default tamaguiConfig;
+
+export default appConfig
 

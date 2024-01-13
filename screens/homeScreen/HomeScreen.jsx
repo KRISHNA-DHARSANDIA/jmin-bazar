@@ -5,12 +5,9 @@ import React from 'react';
 //component
 import Navbar from '../../components/NavbarTop/Navbar';
 
-const screenWidth = Dimensions.get('window').width;
-const screenHeight = Dimensions.get('window').height;
-
 const HomeScreen = () => {
   return (
-    <View style={{ width: screenWidth, height: screenHeight,backgroundColor:'#f5f6fb' }}>
+    <View style={{ flex:1,backgroundColor:'#f5f6fb' }}>
       <View>
         <Navbar />
       </View>
