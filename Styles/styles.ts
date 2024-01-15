@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { StyleSheet, Dimensions } from "react-native";
+import { StyleSheet, Dimensions } from 'react-native';
 import Colors from '../constants/Colors';
 
 // Get the screen dimensions
@@ -95,6 +95,7 @@ const Styles = StyleSheet.create({
         borderLeftWidth:2,
         borderColor:'#cfcfcf',
         marginBottom:6,
+        alignSelf: 'stretch',
     },
     AUtxtgeneral:{
         marginBottom:6,
@@ -116,13 +117,42 @@ const Styles = StyleSheet.create({
         borderRadius:6,
     },
     UAContinueBtntxt:{
-        width:100,
         fontSize:18,
         color:Colors.white,
         fontWeight:'600',
     },
     UADropdownSelector:{
         marginRight:10,
+    },
+    AUMainheadtext:{
+        fontSize:18,
+        fontWeight:'600',
+        color:'black',
+    },
+    AUMainheadtextNum:{
+        fontSize:20,
+        fontWeight:'600',
+        color:'black',
+        marginVertical:6,
+    },
+    AUMainheadcontainer:{
+        marginBottom:4,
+    },
+    AUtxtmessage:{
+        fontSize:14,
+        marginVertical:4,
+    },
+    AUtextMessBottom:{
+        flexDirection:'row',
+        marginVertical:4,
+    },
+    AUtxtmessageBottom:{
+        fontSize:14,
+        flexDirection:'row',
+    },
+    AUtxtmessageBottomRE:{
+        color: '#0090ff',
+        fontWeight:'600',
     },
 });
 

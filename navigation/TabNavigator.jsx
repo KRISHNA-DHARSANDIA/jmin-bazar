@@ -54,8 +54,6 @@ const CustomTabBarButton = ({ children, onPress }) => (
     </TouchableOpacity>
 );
 
-
-
 const TabButton = (props) => {
     const { item, onPress, accessibilityState } = props;
     const focused = accessibilityState.selected;

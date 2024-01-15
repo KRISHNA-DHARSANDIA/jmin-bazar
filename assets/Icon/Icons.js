@@ -28,6 +28,14 @@ export const Icons = {
     EvilIcons,
 };
 
+// type Iconpros = {
+//     type: string;
+//     name: string;
+//     color: string;
+//     size: Number;
+//     style: Styles;
+// }
+
 const Icon = ({ type, name, color, size = 24, style }) => {
     const fontSize = 24;
     const Tag = type;
