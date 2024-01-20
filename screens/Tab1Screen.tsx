@@ -9,7 +9,7 @@ const Tab1Screen = () => {
   const bottomSheetRef = useRef<BottomSheet>(null);
 
   // variables
-  const snapPoints = useMemo(() => ['25%'], []);
+  const snapPoints = useMemo(() => ['25%','80%'], []);
 
   // callbacks
   const handleClosePress = () => bottomSheetRef.current?.close();

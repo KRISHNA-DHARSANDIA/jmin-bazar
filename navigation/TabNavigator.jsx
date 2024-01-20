@@ -1,3 +1,5 @@
+/* eslint-disable react/no-unstable-nested-components */
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable prettier/prettier */
 import React, { useEffect, useRef, useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -20,8 +22,8 @@ const TabArr = [
     { route: 'HomeScreen', label: 'Home', type: Icons.Ionicons, activeIcon: 'home', inActiveIcon: 'home-outline', component: HomeScreen, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite },
     { route: 'UserLike', label: 'Like', type: Icons.MaterialCommunityIcons, activeIcon: 'heart-plus', inActiveIcon: 'heart-plus-outline', component: UserLike, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite },
     {
-        route: 'Search', label: 'Activity', type: Icons.Feather, activeIcon: 'search',
-        inActiveIcon: 'search', component: Tab1Screen, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite,
+        route: 'Search', label: 'Activity', type: Icons.Feather, activeIcon: 'plus',
+        inActiveIcon: 'plus', component: Tab1Screen, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite,
     },
     { route: 'Views', label: 'Activity', type: Icons.AntDesign, activeIcon: 'clockcircle', inActiveIcon: 'clockcircleo', component: Views, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite },
     { route: 'UserInfo', label: 'Profile', type: Icons.FontAwesome, activeIcon: 'user-circle', inActiveIcon: 'user-circle-o', component: UserInfo, color: Colors.primaryMoreTransLite, alphaClr: Colors.primaryMoreTransLite },
@@ -61,10 +63,10 @@ const TabButton = (props) => {
 
     useEffect(() => {
         if (focused) {
-            viewRef.current.animate({ 0: { scale: 1 }, 1: { scale: 1.5 } });
+            viewRef.current.animate({ 0: { scale: 1 }, 1: { scale: 1.2 } });
         }
         else { // zoom in and out
-            viewRef.current.animate({ 0: { scale: 1.5 }, 1: { scale: 1 } });
+            viewRef.current.animate({ 0: { scale: 1.1 }, 1: { scale: 1 } });
         }
     }, [focused]);
 
@@ -75,11 +77,13 @@ const TabButton = (props) => {
             style={[styles.container]}>
             <Animatable.View
                 ref={viewRef}
-                duration={100} />
-            <View style={[styles.btn, { width: 64, marginHorizontal: -10, backgroundColor: focused ? item.alphaClr : null }]}>
-                <Icon size={16} type={item.type} name={focused ? item.activeIcon : item.inActiveIcon} color={focused ? Colors.primary : Colors.primaryLite} />
-                <Text style={[styles.labeltxt, focused && styles.selectedLabel]}>{item.label}</Text>
-            </View>
+                duration={100}>
+                <View style={[styles.btn, { width: 64, marginHorizontal: -10 }]}>
+                    <View style={{ backgroundColor: focused ? item.alphaClr : null, width: 6, height: 6, borderRadius: 3, marginBottom: 5 }} />
+                    <Icon size={23} type={item.type} name={focused ? item.activeIcon : item.inActiveIcon} color={focused ? Colors.primary : Colors.primaryLite} />
+                    {/* <Text style={[styles.labeltxt, focused && styles.selectedLabel]}>{item.label}</Text> */}
+                </View>
+            </Animatable.View>
         </TouchableOpacity>
     );
 };
@@ -87,49 +91,49 @@ const TabButton = (props) => {
 export default function TabNavigator() {
 
     return (
-            <Tab.Navigator
-                shifting={true}
-                screenOptions={{
-                    headerShown: false,
-                    tabBarStyle: {
-                        height: 66,
-                        position: 'absolute',
-                        bottom: 0,
-                        right: 0,
-                        left: 0,
-                        borderTopLeftRadius: 20,
-                        borderTopRightRadius: 20,
-                    },
-                }}
-            >
-                {TabArr.map((item, index) => (
-                    <Tab.Screen
-                        key={index}
-                        name={item.route}
-                        component={item.component}
-                        options={{
-                            tabBarShowLabel: false,
-                            tabBarIcon: ({ focused }) => (
-                                <Icon size={26} type={item.type} name={focused ? item.activeIcon : item.inActiveIcon}
-                                    style={{
-                                        width: 30,
-                                        height: 30,
-                                        color: 'white',
-                                    }}
-                                />
-                            ),
-                            tabBarButton: (props) => (
-                                item.route === 'Search' ? (
-                                    <CustomTabBarButton {...props} />
-                                ) : (
-                                    <TabButton {...props} item={item} />
-                                )
-                            ),
-                        }}
-                    />
-                ))}
-            </Tab.Navigator>
-        );
+        <Tab.Navigator
+            shifting={true}
+            screenOptions={{
+                headerShown: false,
+                tabBarStyle: {
+                    height: 66,
+                    position: 'absolute',
+                    bottom: 0,
+                    right: 0,
+                    left: 0,
+                    borderTopLeftRadius: 20,
+                    borderTopRightRadius: 20,
+                },
+            }}
+        >
+            {TabArr.map((item, index) => (
+                <Tab.Screen
+                    key={index}
+                    name={item.route}
+                    component={item.component}
+                    options={{
+                        tabBarShowLabel: false,
+                        tabBarIcon: ({ focused }) => (
+                            <Icon size={28} type={item.type} name={focused ? item.activeIcon : item.inActiveIcon}
+                                style={{
+                                    color: 'white',
+                                    justifyContent:'center',
+                                    alignItems:'center',
+                                }}
+                            />
+                        ),
+                        tabBarButton: (props) => (
+                            item.route === 'Search' ? (
+                                <CustomTabBarButton {...props} />
+                            ) : (
+                                <TabButton {...props} item={item} />
+                            )
+                        ),
+                    }}
+                />
+            ))}
+        </Tab.Navigator>
+    );
 }
 
 const styles = StyleSheet.create({
