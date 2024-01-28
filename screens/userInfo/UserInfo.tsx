@@ -13,8 +13,11 @@ import {
 } from 'tamagui';
 import { Styles } from '../../Styles/GetTamaguiStyles';
 
+//APi
+import axios from 'axios';
+
 //Alert 
-import * as Burnt from "burnt";
+import * as Burnt from 'burnt';
 
 // //AsyncStorage
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -27,10 +30,12 @@ import CustomHeader from '../../components/customHeader/CustomHeader';
 import CustomeBottomSheet from '../../components/BottomSheet/BottomSheetModel';
 
 import { RouteProp } from '@react-navigation/native';
+import axiosInstance from '../../axiosInstance';
+import Colors from '../../constants/Colors';
 
 // Define the types for  navigation stack
 type RootStackParamList = {
-  UserInfo: { credential: any; isLoggedIn: boolean };
+  UserInfo: { credential: any; isLoggedIn: boolean, phoneNumber: string };
 };
 
 // Define the types for route and navigation based on the stack
@@ -48,50 +53,89 @@ const UserInfo: React.FC<UserInfoProps> = ({ route }) => {
   const { params } = route;
 
   let credential = params?.credential;
-  let isLoggedIn = params?.isLoggedIn ? true : false;
+  let phoneNumber = params?.phoneNumber;
+  let isLoggedIn = params?.isLoggedIn;
 
-  const { dismissAll,dismiss } = useBottomSheetModal();
+  const { dismissAll, dismiss } = useBottomSheetModal();
 
   useEffect(() => {
-    if (credential !== '' && isLoggedIn === true) {
-      let providerId = credential.providerId;
-      storeData(providerId, isLoggedIn);
+
+    const storeData = async (phonenumber: any, LoginCheck: boolean) => {
+      try {
+        //Store data in Datbase
+        axiosInstance.post('registration', {
+          Phonenumber: ('+91' + phonenumber),
+          IsLogin: Boolean(LoginCheck),
+        }).then(function (response) {
+          //store Data in Mobile storage
+          if (response.data !== 'Error') {
+            AsyncStorage.setItem('PhoneNumber', ('+91' + phonenumber));
+            AsyncStorage.setItem('LoginCheck', String(LoginCheck));
+
+            getData();
+            //Give User Login confirm
+            return (
+              Burnt.alert({
+                title: 'Login Successs :D 🎉',
+                preset: 'done',
+                message: 'Login SuccessFully',
+                duration: 2,
+                layout: {
+                  iconSize: {
+                    height: 24,
+                    width: 24,
+                  },
+                },
+              })
+            );
+          }
+          else {
+            return (
+              Burnt.alert({
+                title: 'Something going Wrong :D',
+                preset: 'done',
+                message: 'Wrong',
+                duration: 2,
+                layout: {
+                  iconSize: {
+                    height: 24,
+                    width: 24,
+                  },
+                },
+              })
+            );
+          }
+        })
+          .catch(function (error) {
+            console.log(error);
+          });
+      } catch (e) {
+        console.log('Something going wrong');
+      }
+    };
+
+    if (credential !== '' && isLoggedIn === true && phoneNumber !== '') {
+      //let providerId = credential.providerId;
+      storeData(phoneNumber, isLoggedIn);
       dismissAll();
+      return;
     }
     //Call the function when Screen on Changes are Made in Screen
     getData();
-  }, [credential, isLoggedIn, dismissAll]);
+
+  }, [credential, isLoggedIn, dismissAll, phoneNumber]);
 
   //set the User Info in Local Storage
-  const storeData = async (phonenumber: any, LoginCheck: boolean) => {
-    //Give User Login confirm
-    Burnt.alert({
-      title: 'Login Successs :D',
-      preset: 'done',
-      message: 'Login SuccessFully',
-      duration: 2,
-      layout: {
-        iconSize: {
-          height: 24,
-          width: 24,
-        },
-      },
-    });
-    try {
-      await AsyncStorage.setItem('PhoneNumber', phonenumber);
-      await AsyncStorage.setItem('LoginCheck', String(LoginCheck));
-    } catch (e) {
-      console.log('Something going wrong');
-    }
-  };
+
 
   const getData = async () => {
     try {
       const PhoneNumber = await AsyncStorage.getItem('PhoneNumber');
       const LoginCheck = await AsyncStorage.getItem('LoginCheck');
+
       if (PhoneNumber !== null && Boolean(LoginCheck) === true) {
         setUserLabel(PhoneNumber);
-        setIsLoggedIn(Boolean(LoginCheck));
+        setIsLoggedIn(true);
       }
       else {
         setUserLabel('Login / Register');
@@ -106,28 +150,56 @@ const UserInfo: React.FC<UserInfoProps> = ({ route }) => {
 
   const UserLogout = async () => {
     try {
-      await AsyncStorage.removeItem('PhoneNumber');
-      await AsyncStorage.removeItem('LoginCheck');
+      const PhoneNumber = await AsyncStorage.getItem('PhoneNumber');
+      //set islogin to false
+      await axiosInstance.post('logoutuser', {
+        Phonenumber: PhoneNumber,
+        IsLogin: false,
+      }).then(function (response) {
+        if (response.data !== 'Error') {
 
-      //Change in Cuurent State
-      setUserLabel('Login / Register');
-      setIsLoggedIn(false);
+          AsyncStorage.removeItem('PhoneNumber');
+          AsyncStorage.removeItem('LoginCheck');
 
-      //Give User logout confirm
-      return (
-        Burnt.alert({
-          title: 'Logout SuccesssFully',
-          preset: 'done',
-          message: 'Logout SuccessFully',
-          duration: 2,
-          layout: {
-            iconSize: {
-              height: 100,
-              width: 100,
-            },
-          },
-        })
-      );
+          //Change in Cuurent State
+          setUserLabel('Login / Register');
+          setIsLoggedIn(false);
+
+          //Give User logout confirm
+          return (
+            Burnt.alert({
+              title: 'Logout SuccesssFully 🥲',
+              preset: 'done',
+              message: 'Logout SuccessFully',
+              duration: 2,
+              layout: {
+                iconSize: {
+                  height: 200,
+                  width: 200,
+                },
+              },
+            })
+          );
+        }
+        else {
+          return (
+            Burnt.alert({
+              title: 'Something Going wrong 🦖',
+              preset: 'done',
+              message: 'Something 🦖🦖',
+              duration: 2,
+              layout: {
+                iconSize: {
+                  height: 100,
+                  width: 100,
+                },
+              },
+            })
+          );
+        }
+      }).catch(function (error) {
+        console.log('krishna', error);
+      });
     }
     catch (e) {
       console.log('Error in Logout', e);
@@ -144,7 +216,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ route }) => {
 
   useEffect(() => {
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-      dismiss(); // Dismiss the bottom sheet modal
+      dismiss();
       return true;
     });
 
@@ -156,16 +228,17 @@ const UserInfo: React.FC<UserInfoProps> = ({ route }) => {
   return (
     <SafeAreaView style={[Styles.screenHeight, { flex: 1 }]}>
       <View style={styles.container}>
-        <CustomHeader title={"User Info"} />
+        <CustomHeader title={'User Info'} />
         <View style={[Styles.UsIMainView]}>
           {/* UserIcon / Login,Register and txt content part */}
           <View style={[Styles.UsiTopcontaner]}>
             {/* UserIcon conatienr */}
-            <View style={[Styles.UsiImgecontainer]}>
-              <Icon size={140} type={Icons.EvilIcons} name="user" />
+            {/* <View style={[Styles.UsiImgecontainer]}> */}
+            <View>
+              <Icon style={{}} size={140} type={Icons.EvilIcons} color={Colors.darkGray} name="user" />
             </View>
             {/* Login/Register text container */}
-            <TouchableOpacity  activeOpacity={1} style={[Styles.UsiBtnregister]} onPress={handleOpenPress}>
+            <TouchableOpacity activeOpacity={1} onPress={handleOpenPress}>
               {/* main text  */}
               <View style={[Styles.UsimainbnttxtConatiner]}>
                 <Text style={[Styles.Usimainbnttxt]}>{UserLabel}</Text>

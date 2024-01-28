@@ -1,12 +1,12 @@
 /* eslint-disable prettier/prettier */
-import React, { forwardRef, useState, useMemo, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, Animated, Keyboard } from 'react-native';
+import React, { forwardRef, useState, useMemo, useEffect } from 'react';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, Keyboard, BackHandler } from 'react-native';
 import {
     BottomSheetModal,
     useBottomSheetModal
 } from '@gorhom/bottom-sheet';
-import auth from '@react-native-firebase/auth';
-import { useNavigation } from '@react-navigation/native';
+import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
 
 //OTP input
 import OtpInputs from 'react-native-otp-inputs';
@@ -14,20 +14,33 @@ import OtpInputs from 'react-native-otp-inputs';
 //Style
 import Styles from '../../Styles/styles';
 
+
 export type Ref = BottomSheetModal;
+
+type RootStackParamList = {
+    Home: undefined;
+    UserInfo: {
+        phoneNumber: string;
+        credential: FirebaseAuthTypes.AuthCredential;
+        isLoggedIn: boolean;
+    };
+};
+
+type NavigationType = NavigationProp<RootStackParamList>;
 
 const BottomSheetModel = forwardRef<Ref>((props, ref) => {
 
-    const navigation = useNavigation();
+    const navigation = useNavigation<NavigationType>();
 
-    const [phoneNumber, setPhoneNumber] = useState('');
+    const { dismissAll } = useBottomSheetModal();
+
+    const [phoneNumber, setPhoneNumber] = useState<string>('');
     const [borderColor, setBorderColor] = useState('#0177dd');
     const [label, setLabel] = useState('Phone number');
     const [confirmationCode, setConfirmationCode] = useState('');
     const [verificationId, setVerificationId] = useState('');
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState<boolean>(false);
     const [bottomSheetIndex, setBottomSheetIndex] = useState(0);
-    const animatedIndex = useRef(new Animated.Value(0)).current;
 
     const handlePhoneNumberChange = (inputText: any) => {
         const cleanedPhoneNumber = inputText.replace(/[^0-9]/g, '');
@@ -59,22 +72,22 @@ const BottomSheetModel = forwardRef<Ref>((props, ref) => {
             },
         );
 
-        // const handleBackPress = () => {
-        //     // Handle back press
-        //     setBottomSheetIndex(0);
-        //     console.log('hiiii');
-        //     return true; // Prevent default behavior (exiting the app)
-        // };
+        const handleBackPress = () => {
+            // Handle back press
+            dismissAll();
+            console.log('hiiii');
+            return true; // Prevent default behavior (exiting the app)
+        };
 
-        //const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
 
         return () => {
             // Cleanup the event listener when the component unmounts
-            // backHandler.remove();
+            backHandler.remove();
             keyboardDidShowListener.remove();
             keyboardDidHideListener.remove();
         };
-    }, [animatedIndex]);
+    }, []);
 
     const isButtonDisabled = phoneNumber.length < 10;
     const buttonBackgroundColor = isButtonDisabled ? '#83bcf0' : '#0177dd';
@@ -92,7 +105,7 @@ const BottomSheetModel = forwardRef<Ref>((props, ref) => {
         try {
             setLoading(true);
             const confirmation = await auth().signInWithPhoneNumber('+91' + phoneNumber);
-            if (confirmCode !== null) {
+            if (confirmation.verificationId !== null) {
                 setVerificationId(confirmation.verificationId);
             }
         } catch (error) {
@@ -102,8 +115,6 @@ const BottomSheetModel = forwardRef<Ref>((props, ref) => {
             setLoading(false);
         }
     };
-
-    const { dismissAll} = useBottomSheetModal();
 
     const confirmCode = async () => {
         try {
@@ -118,9 +129,12 @@ const BottomSheetModel = forwardRef<Ref>((props, ref) => {
 
             // Send the providerId to the user info page
             navigation.navigate('UserInfo', {
+                phoneNumber: phoneNumber,
                 credential: credential,
                 isLoggedIn: true,
             });
+
+
 
             setVerificationId('');
             setPhoneNumber('');

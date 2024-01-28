@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/EvilIcons';
 
-const CustomHeader = ({ title }) => {
+const CustomHeader = ({ title = '' }) => {
     return (
         <SafeAreaView>
             <View style={[styles.mainNav]}>

@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable prettier/prettier */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useLayoutEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Icon, { Icons } from '../assets/Icon/Icons';
@@ -61,7 +61,7 @@ const TabButton = (props) => {
     const focused = accessibilityState.selected;
     const viewRef = useRef(null);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (focused) {
             viewRef.current.animate({ 0: { scale: 1 }, 1: { scale: 1.2 } });
         }
@@ -78,7 +78,7 @@ const TabButton = (props) => {
             <Animatable.View
                 ref={viewRef}
                 duration={100}>
-                <View style={[styles.btn, { width: 64, marginHorizontal: -10 }]}>
+                <View style={[styles.btn, { width: 64 }]}>
                     <View style={{ backgroundColor: focused ? item.alphaClr : null, width: 6, height: 6, borderRadius: 3, marginBottom: 5 }} />
                     <Icon size={23} type={item.type} name={focused ? item.activeIcon : item.inActiveIcon} color={focused ? Colors.primary : Colors.primaryLite} />
                     {/* <Text style={[styles.labeltxt, focused && styles.selectedLabel]}>{item.label}</Text> */}
@@ -150,9 +150,9 @@ const styles = StyleSheet.create({
     btn: {
         flexDirection: 'column',
         alignItems: 'center',
-        paddingHorizontal: 10,
+        paddingHorizontal: 14,
         paddingVertical: 14,
         borderBottomLeftRadius: 22,
-        borderBottomRightRadius: 20,
+        borderBottomRightRadius: 22,
     },
 });

@@ -4,7 +4,6 @@ import {
   StyleSheet,
   View,
   Text,
-  Dimensions,
   Image,
   ImageBackground,
   Alert,
@@ -15,6 +14,7 @@ import NetInfo from '@react-native-community/netinfo';
 const FirstLoad = ({navigation}) => {
   // Check the internet Is Connected
   const [isConnected, setIsConnected] = useState(null);
+  const [alertAcknowledged, setAlertAcknowledged] = useState(false);
 
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
@@ -33,12 +33,32 @@ const FirstLoad = ({navigation}) => {
         Alert.alert(
           'No Internet',
           'Please check your internet connection and try again.',
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                // Set a flag to indicate that the user has acknowledged the alert
+                setAlertAcknowledged(true);
+              },
+            },
+          ],
         );
       }
-    }, 3000);
+    }, 2000);
 
     return () => clearTimeout(delay);
   }, [isConnected, navigation]);
+
+  useEffect(() => {
+    // Check connection again if the user has acknowledged the alert
+    if (alertAcknowledged) {
+      NetInfo.fetch().then(state => {
+        setIsConnected(state.isConnected);
+      });
+      // Reset the acknowledgment flag
+      setAlertAcknowledged(false);
+    }
+  }, [alertAcknowledged]);
 
   return (
     <View style={styles.container}>

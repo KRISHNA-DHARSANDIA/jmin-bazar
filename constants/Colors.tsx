@@ -22,6 +22,7 @@ export default {
   gold: 'gold',
   line: '#282C35',
   darkGray: '#999999',
+  lightblue:'#40A2D8',
 
   //text color
   textdark:'#263243',

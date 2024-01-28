@@ -131,6 +131,18 @@ const Styles = StyleSheet.create({
     UADropdownSelector: {
         marginRight: 10,
     },
+
+    //Home Page react Add
+    recttxt:{
+        fontSize:17,
+        fontWeight:'700',
+        color:Colors.dark,
+    },
+    recttittxt:{
+        fontSize:14,
+        fontWeight:'700',
+        color:Colors.dark,
+    }
 });
 
 export { GetTamaguiStyles, Styles };
