@@ -13,13 +13,11 @@ import {
 } from 'tamagui';
 import { Styles } from '../../Styles/GetTamaguiStyles';
 
-//APi
-import axios from 'axios';
 
 //Alert 
-import * as Burnt from 'burnt';
+import { useToast } from "react-native-toast-notifications";
 
-// //AsyncStorage
+//AsyncStorage
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 //bottom Sheet
@@ -30,6 +28,8 @@ import CustomHeader from '../../components/customHeader/CustomHeader';
 import CustomeBottomSheet from '../../components/BottomSheet/BottomSheetModel';
 
 import { RouteProp } from '@react-navigation/native';
+
+//API
 import axiosInstance from '../../axiosInstance';
 import Colors from '../../constants/Colors';
 
@@ -47,6 +47,8 @@ type UserInfoProps = {
 
 const UserInfo: React.FC<UserInfoProps> = ({ route }) => {
 
+  const toast = useToast();
+
   const [UserLabel, setUserLabel] = useState('Login / Register');
   const [IsLogin, setIsLoggedIn] = useState(false);
 
@@ -59,7 +61,6 @@ const UserInfo: React.FC<UserInfoProps> = ({ route }) => {
   const { dismissAll, dismiss } = useBottomSheetModal();
 
   useEffect(() => {
-
     const storeData = async (phonenumber: any, LoginCheck: boolean) => {
       try {
         //Store data in Datbase
@@ -75,33 +76,23 @@ const UserInfo: React.FC<UserInfoProps> = ({ route }) => {
             getData();
             //Give User Login confirm
             return (
-              Burnt.alert({
-                title: 'Login Successs :D 🎉',
-                preset: 'done',
-                message: 'Login SuccessFully',
-                duration: 2,
-                layout: {
-                  iconSize: {
-                    height: 24,
-                    width: 24,
-                  },
-                },
+              toast.show("Login successfully",{
+                type: 'normal',
+                placement: 'bottom',
+                duration: 2000,
+                animationType: 'zoom-in',
+                normalColor:'#637A9F80',
               })
             );
           }
           else {
             return (
-              Burnt.alert({
-                title: 'Something going Wrong :D',
-                preset: 'done',
-                message: 'Wrong',
-                duration: 2,
-                layout: {
-                  iconSize: {
-                    height: 24,
-                    width: 24,
-                  },
-                },
+              toast.show("Something going Wrong :D",{
+                type: 'normal',
+                placement: 'bottom',
+                duration: 2000,
+                animationType: 'zoom-in',
+                normalColor:'#637A9F80',
               })
             );
           }
@@ -123,7 +114,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ route }) => {
     //Call the function when Screen on Changes are Made in Screen
     getData();
 
-  }, [credential, isLoggedIn, dismissAll, phoneNumber]);
+  }, [credential, isLoggedIn, dismissAll, phoneNumber,toast]);
 
   //set the User Info in Local Storage
 
@@ -167,33 +158,23 @@ const UserInfo: React.FC<UserInfoProps> = ({ route }) => {
 
           //Give User logout confirm
           return (
-            Burnt.alert({
-              title: 'Logout SuccesssFully 🥲',
-              preset: 'done',
-              message: 'Logout SuccessFully',
-              duration: 2,
-              layout: {
-                iconSize: {
-                  height: 200,
-                  width: 200,
-                },
-              },
+            toast.show("Logout SuccesssFully 🥲",{
+              type: 'normal',
+              placement: 'bottom',
+              duration: 2000,
+              animationType: 'zoom-in',
+              normalColor:'#637A9F90',
             })
           );
         }
         else {
           return (
-            Burnt.alert({
-              title: 'Something Going wrong 🦖',
-              preset: 'done',
-              message: 'Something 🦖🦖',
-              duration: 2,
-              layout: {
-                iconSize: {
-                  height: 100,
-                  width: 100,
-                },
-              },
+            toast.show("Something Going wrong 🦖",{
+              type: 'normal',
+              placement: 'bottom',
+              duration: 2000,
+              animationType: 'zoom-in',
+              normalColor:'#637A9F90',
             })
           );
         }

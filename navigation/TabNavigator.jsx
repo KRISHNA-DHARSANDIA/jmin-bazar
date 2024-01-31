@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable prettier/prettier */
-import React, { useEffect, useRef, useLayoutEffect } from 'react';
+import React, { useMemo, useRef, useLayoutEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Icon, { Icons } from '../assets/Icon/Icons';
@@ -15,60 +15,46 @@ import HomeScreen from '../screens/homeScreen/HomeScreen';
 import UserInfo from '../screens/userInfo/UserInfo';
 import Views from '../screens/Views';
 import UserLike from '../screens/UserLike';
-import Tab1Screen from '../screens/Tab1Screen';
 
-
-const TabArr = [
-    { route: 'HomeScreen', label: 'Home', type: Icons.Ionicons, activeIcon: 'home', inActiveIcon: 'home-outline', component: HomeScreen, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite },
-    { route: 'UserLike', label: 'Like', type: Icons.MaterialCommunityIcons, activeIcon: 'heart-plus', inActiveIcon: 'heart-plus-outline', component: UserLike, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite },
-    {
-        route: 'Search', label: 'Activity', type: Icons.Feather, activeIcon: 'plus',
-        inActiveIcon: 'plus', component: Tab1Screen, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite,
-    },
-    { route: 'Views', label: 'Activity', type: Icons.AntDesign, activeIcon: 'clockcircle', inActiveIcon: 'clockcircleo', component: Views, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite },
-    { route: 'UserInfo', label: 'Profile', type: Icons.FontAwesome, activeIcon: 'user-circle', inActiveIcon: 'user-circle-o', component: UserInfo, color: Colors.primaryMoreTransLite, alphaClr: Colors.primaryMoreTransLite },
-];
 
 const Tab = createBottomTabNavigator();
 
-const CustomTabBarButton = ({ children, onPress }) => (
-    <TouchableOpacity
-        style={{
-            top: -30,
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: '#f5f6fb',
-            borderRadius: 35,
-            width: 70,
-            height: 70,
-            ...styles.shadow,
-        }}
-        onPress={onPress}
-    >
-        <View style={{
-            width: 60,
-            height: 60,
-            borderRadius: 35,
-            backgroundColor: '#01b862',
-        }}>
-            {children}
-        </View>
-    </TouchableOpacity>
-);
+// const CustomTabBarButton = ({ children, onPress }) => (
+//     <TouchableOpacity
+//         style={{
+//             top: -30,
+//             justifyContent: 'center',
+//             alignItems: 'center',
+//             backgroundColor: '#f5f6fb',
+//             borderRadius: 35,
+//             width: 70,
+//             height: 70,
+//             ...styles.shadow,
+//         }}
+//         onPress={onPress}
+//     >
+//         <View style={{
+//             width: 60,
+//             height: 60,
+//             borderRadius: 35,
+//             backgroundColor: '#01b862',
+//         }}>
+//             {children}
+//         </View>
+//     </TouchableOpacity>
+// );
 
 const TabButton = (props) => {
     const { item, onPress, accessibilityState } = props;
-    const focused = accessibilityState.selected;
+    const { selected } = accessibilityState;
     const viewRef = useRef(null);
 
     useLayoutEffect(() => {
-        if (focused) {
-            viewRef.current.animate({ 0: { scale: 1 }, 1: { scale: 1.2 } });
-        }
-        else { // zoom in and out
-            viewRef.current.animate({ 0: { scale: 1.1 }, 1: { scale: 1 } });
-        }
-    }, [focused]);
+        viewRef.current.animate({
+            0: { scale: selected ? 1 : 1.2 },
+            1: { scale: selected ? 1.2 : 1 },
+        });
+    }, [selected]);
 
     return (
         <TouchableOpacity
@@ -77,11 +63,11 @@ const TabButton = (props) => {
             style={[styles.container]}>
             <Animatable.View
                 ref={viewRef}
-                duration={100}>
+                duration={1000}>
                 <View style={[styles.btn, { width: 64 }]}>
-                    <View style={{ backgroundColor: focused ? item.alphaClr : null, width: 6, height: 6, borderRadius: 3, marginBottom: 5 }} />
-                    <Icon size={23} type={item.type} name={focused ? item.activeIcon : item.inActiveIcon} color={focused ? Colors.primary : Colors.primaryLite} />
-                    {/* <Text style={[styles.labeltxt, focused && styles.selectedLabel]}>{item.label}</Text> */}
+                    <View style={{ backgroundColor: selected ? item.alphaClr : null, width: 6, height: 6, borderRadius: 3, marginBottom: 5 }} />
+                    <Icon size={23} type={item.type} name={selected ? item.activeIcon : item.inActiveIcon} color={selected ? Colors.primary : Colors.primaryLite} />
+                    {/* <Text style={[styles.labeltxt, selected && styles.selectedLabel]}>{item.label}</Text> */}
                 </View>
             </Animatable.View>
         </TouchableOpacity>
@@ -90,9 +76,20 @@ const TabButton = (props) => {
 
 export default function TabNavigator() {
 
+    const TabArr = [
+        { route: 'HomeScreen', label: 'Home', type: Icons.Ionicons, activeIcon: 'home', inActiveIcon: 'home-outline', component: HomeScreen, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite },
+        { route: 'UserLike', label: 'Like', type: Icons.MaterialCommunityIcons, activeIcon: 'heart-plus', inActiveIcon: 'heart-plus-outline', component: UserLike, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite },
+        // {
+        //     route: 'Search', label: 'Activity', type: Icons.Feather, activeIcon: 'plus',
+        //     inActiveIcon: 'plus', component: Tab1Screen, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite,
+        // },
+        { route: 'Views', label: 'Activity', type: Icons.AntDesign, activeIcon: 'clockcircle', inActiveIcon: 'clockcircleo', component: Views, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite },
+        { route: 'UserInfo', label: 'Profile', type: Icons.FontAwesome, activeIcon: 'user-circle', inActiveIcon: 'user-circle-o', component: UserInfo, color: Colors.primaryMoreTransLite, alphaClr: Colors.primaryMoreTransLite },
+    ];
+
     return (
         <Tab.Navigator
-            shifting={true}
+            shifting={false}
             screenOptions={{
                 headerShown: false,
                 tabBarStyle: {
@@ -117,17 +114,17 @@ export default function TabNavigator() {
                             <Icon size={28} type={item.type} name={focused ? item.activeIcon : item.inActiveIcon}
                                 style={{
                                     color: 'white',
-                                    justifyContent:'center',
-                                    alignItems:'center',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
                                 }}
                             />
                         ),
                         tabBarButton: (props) => (
-                            item.route === 'Search' ? (
-                                <CustomTabBarButton {...props} />
-                            ) : (
-                                <TabButton {...props} item={item} />
-                            )
+                            //     item.route === 'Search' ? (
+                            //         // <CustomTabBarButton {...props} />
+                            //     ) : (
+                            <TabButton {...props} item={item} />
+                            //     )
                         ),
                     }}
                 />

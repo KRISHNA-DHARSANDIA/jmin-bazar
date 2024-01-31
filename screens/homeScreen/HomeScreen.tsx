@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable prettier/prettier */
 import { StyleSheet, Dimensions, Text, TouchableOpacity, RefreshControl } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Crosshair, Airplay, AirVent, Brain, CloudSunRain } from '@tamagui/lucide-icons';
 import { View, ScrollView, Button, XStack, YStack, Image, Card, CardProps } from 'tamagui';
 import { useFocusEffect } from '@react-navigation/native';
@@ -31,7 +31,7 @@ const HomeScreen = (props: any) => {
     React.useCallback(() => {
       // Use setTimeout if needed, but wrap the fetchData call inside the useCallback
       const fetchDataWithTimeout = async () => {
-        await new Promise(resolve => setTimeout(resolve, 500)); // 100 milliseconds timeout
+        await new Promise(resolve => setTimeout(resolve, 1000)); // 100 milliseconds timeout
         fetchData();
       };
 
@@ -58,7 +58,7 @@ const HomeScreen = (props: any) => {
     }, 0);
   }
 
-  useEffect(() => {
+  useMemo(() => {
     fetchData();
   }, []);
 
@@ -135,11 +135,11 @@ const HomeScreen = (props: any) => {
                 <Text style={Styles.recttxt}>Recently Added</Text>
                 <Text>Latest Properties are Here</Text>
               </View>
-              <View>
+              {/* <View>
                 <TouchableOpacity>
                   <Text>See All</Text>
                 </TouchableOpacity>
-              </View>
+              </View> */}
             </View>
             <View>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>

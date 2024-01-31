@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { SafeAreaView, Dimensions, StyleSheet, Text, RefreshControl, TouchableOpacity } from 'react-native';
 import { View, ScrollView, YStack, Image, Card, CardProps } from 'tamagui';
-import React, { useState, useEffect } from 'react';
+import React, { useState,useMemo } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import CustomHeader from '../components/customHeader/CustomHeader';
 
@@ -25,7 +25,7 @@ const UserLike = () => {
     React.useCallback(() => {
       // Use setTimeout if needed, but wrap the fetchData call inside the useCallback
       const fetchDataWithTimeout = async () => {
-        await new Promise(resolve => setTimeout(resolve, 500)); // 100 milliseconds timeout
+        await new Promise(resolve => setTimeout(resolve, 1000)); // 100 milliseconds timeout
         fetchData();
       };
 
@@ -50,10 +50,10 @@ const UserLike = () => {
       });
     setTimeout(() => {
       setRefreshing(false);
-    }, 0);
+    }, 100);
   }
 
-  useEffect(() => {
+  useMemo(() => {
     fetchData();
   }, []);
 

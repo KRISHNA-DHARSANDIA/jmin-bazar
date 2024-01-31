@@ -30,10 +30,11 @@ type NavigationType = NavigationProp<RootStackParamList>;
 
 const BottomSheetModel = forwardRef<Ref>((props, ref) => {
 
+    console.log("botom sett call");
+
     const navigation = useNavigation<NavigationType>();
 
     const { dismissAll } = useBottomSheetModal();
-
     const [phoneNumber, setPhoneNumber] = useState<string>('');
     const [borderColor, setBorderColor] = useState('#0177dd');
     const [label, setLabel] = useState('Phone number');
@@ -75,8 +76,7 @@ const BottomSheetModel = forwardRef<Ref>((props, ref) => {
         const handleBackPress = () => {
             // Handle back press
             dismissAll();
-            console.log('hiiii');
-            return true; // Prevent default behavior (exiting the app)
+            return true;
         };
 
         const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
@@ -87,7 +87,7 @@ const BottomSheetModel = forwardRef<Ref>((props, ref) => {
             keyboardDidShowListener.remove();
             keyboardDidHideListener.remove();
         };
-    }, []);
+    }, [dismissAll]);
 
     const isButtonDisabled = phoneNumber.length < 10;
     const buttonBackgroundColor = isButtonDisabled ? '#83bcf0' : '#0177dd';
@@ -133,8 +133,6 @@ const BottomSheetModel = forwardRef<Ref>((props, ref) => {
                 credential: credential,
                 isLoggedIn: true,
             });
-
-
 
             setVerificationId('');
             setPhoneNumber('');
@@ -210,14 +208,12 @@ const BottomSheetModel = forwardRef<Ref>((props, ref) => {
                             </View>
                             <View>
                                 <Text style={Styles.AUtxtmessage}>Enter OTP sent to your mobile number</Text>
-                                {/* <TextInput
-                                    placeholder="Verification code"
-                                    value={confirmationCode}
-                                    textContentType="oneTimeCode"
-                                    onChangeText={(text) => setConfirmationCode(text)}
-                                /> */}
                                 <OtpInputs
-                                    handleChange={(text) => setConfirmationCode(text)}
+                                    handleChange={(text) => {
+                                        setTimeout(() => {
+                                            setConfirmationCode(text);
+                                        }, 0);
+                                    }}
                                     numberOfInputs={6}
                                     autofillFromClipboard={false}
                                     style={styles.OtpBoxStyle}
