@@ -63,10 +63,10 @@ const UserInfo: React.FC<UserInfoProps> = ({ route }) => {
   useEffect(() => {
     const storeData = async (phonenumber: any, LoginCheck: boolean) => {
       try {
-        //Store data in Datbase
+        //Store data in Database
         axiosInstance.post('registration', {
-          Phonenumber: ('+91' + phonenumber),
-          IsLogin: Boolean(LoginCheck),
+          'phnumber': ('+91' + phonenumber),
+          // IsLogin: Boolean(LoginCheck)
         }).then(function (response) {
           //store Data in Mobile storage
           if (response.data !== 'Error') {
@@ -144,11 +144,10 @@ const UserInfo: React.FC<UserInfoProps> = ({ route }) => {
       const PhoneNumber = await AsyncStorage.getItem('PhoneNumber');
       //set islogin to false
       await axiosInstance.post('logoutuser', {
-        Phonenumber: PhoneNumber,
-        IsLogin: false,
+        'phnumber': PhoneNumber,
+        //'IsLogin': false,
       }).then(function (response) {
         if (response.data !== 'Error') {
-
           AsyncStorage.removeItem('PhoneNumber');
           AsyncStorage.removeItem('LoginCheck');
 

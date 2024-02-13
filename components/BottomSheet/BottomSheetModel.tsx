@@ -30,8 +30,6 @@ type NavigationType = NavigationProp<RootStackParamList>;
 
 const BottomSheetModel = forwardRef<Ref>((props, ref) => {
 
-    console.log("botom sett call");
-
     const navigation = useNavigation<NavigationType>();
 
     const { dismissAll } = useBottomSheetModal();

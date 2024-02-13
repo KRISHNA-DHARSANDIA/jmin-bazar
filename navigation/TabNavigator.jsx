@@ -7,42 +7,43 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Icon, { Icons } from '../assets/Icon/Icons';
 import Colors from '../constants/Colors';
 import * as Animatable from 'react-native-animatable';
-import { NavigationContainer } from '@react-navigation/native';
-import { useRoute } from '@react-navigation/native';
 
 //screen
 import HomeScreen from '../screens/homeScreen/HomeScreen';
 import UserInfo from '../screens/userInfo/UserInfo';
 import Views from '../screens/Views';
 import UserLike from '../screens/UserLike';
+import Tab1Screen from '../screens/ScrollViewScreen';
 
 
 const Tab = createBottomTabNavigator();
 
-// const CustomTabBarButton = ({ children, onPress }) => (
-//     <TouchableOpacity
-//         style={{
-//             top: -30,
-//             justifyContent: 'center',
-//             alignItems: 'center',
-//             backgroundColor: '#f5f6fb',
-//             borderRadius: 35,
-//             width: 70,
-//             height: 70,
-//             ...styles.shadow,
-//         }}
-//         onPress={onPress}
-//     >
-//         <View style={{
-//             width: 60,
-//             height: 60,
-//             borderRadius: 35,
-//             backgroundColor: '#01b862',
-//         }}>
-//             {children}
-//         </View>
-//     </TouchableOpacity>
-// );
+const CustomTabBarButton = ({ children, onPress }) => (
+    <TouchableOpacity
+        style={{
+            top: -30,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: '#f5f6fb',
+            borderRadius: 35,
+            width: 70,
+            height: 70,
+            ...styles.shadow,
+        }}
+        onPress={onPress}
+    >
+        <View style={{
+            width: 60,
+            height: 60,
+            borderRadius: 35,
+            backgroundColor: '#01b862',
+            justifyContent: 'center',
+            alignItems: 'center',
+        }}>
+            {children}
+        </View>
+    </TouchableOpacity>
+);
 
 const TabButton = (props) => {
     const { item, onPress, accessibilityState } = props;
@@ -78,12 +79,12 @@ export default function TabNavigator() {
 
     const TabArr = [
         { route: 'HomeScreen', label: 'Home', type: Icons.Ionicons, activeIcon: 'home', inActiveIcon: 'home-outline', component: HomeScreen, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite },
+        { route: 'Views', label: 'Property', type: Icons.MaterialCommunityIcons, activeIcon: 'island', inActiveIcon: 'island', component: Views, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite },
+        {
+            route: 'Search', label: 'Activity', type: Icons.Feather, activeIcon: 'plus',
+            inActiveIcon: 'search', component: Tab1Screen, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite,
+        },
         { route: 'UserLike', label: 'Like', type: Icons.MaterialCommunityIcons, activeIcon: 'heart-plus', inActiveIcon: 'heart-plus-outline', component: UserLike, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite },
-        // {
-        //     route: 'Search', label: 'Activity', type: Icons.Feather, activeIcon: 'plus',
-        //     inActiveIcon: 'plus', component: Tab1Screen, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite,
-        // },
-        { route: 'Views', label: 'Activity', type: Icons.AntDesign, activeIcon: 'clockcircle', inActiveIcon: 'clockcircleo', component: Views, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite },
         { route: 'UserInfo', label: 'Profile', type: Icons.FontAwesome, activeIcon: 'user-circle', inActiveIcon: 'user-circle-o', component: UserInfo, color: Colors.primaryMoreTransLite, alphaClr: Colors.primaryMoreTransLite },
     ];
 
@@ -120,11 +121,11 @@ export default function TabNavigator() {
                             />
                         ),
                         tabBarButton: (props) => (
-                            //     item.route === 'Search' ? (
-                            //         // <CustomTabBarButton {...props} />
-                            //     ) : (
-                            <TabButton {...props} item={item} />
-                            //     )
+                            item.route === 'Search' ? (
+                                <CustomTabBarButton {...props} />
+                            ) : (
+                                <TabButton {...props} item={item} />
+                            )
                         ),
                     }}
                 />

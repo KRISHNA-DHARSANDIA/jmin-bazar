@@ -9,44 +9,49 @@ import {
 import React, { Component } from 'react';
 import Icon from 'react-native-vector-icons/EvilIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import AddProperty from '../../screens/addProperty/AddProperty';
 
-export default class Navbar extends Component {
-    render() {
-        return (
-            <SafeAreaView>
-                <View style={[styles.mainNav]}>
-                    <View style={[styles.navleft]}>
-                        <View style={[styles.leftcontent]}>
+const Navbar = () => {
+
+    // const handleaddproperty = () => {
+    //     navigation.navigate(AddProperty);
+    // }
+
+    return (
+        <SafeAreaView>
+            <View style={[styles.mainNav]}>
+                <View style={[styles.navleft]}>
+                    <View style={[styles.leftcontent]}>
+                        <TouchableOpacity>
+                            <View>
+                                <Icon name="navicon" size={30} color="black" />
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+                <View style={[styles.navright]}>
+                    <View style={[styles.rightcontent]}>
+                        <View>
+                            <TouchableOpacity>
+                                <View style={[styles.postbtn]}>
+                                    <Text style={[styles.postbtntxt]}>Post property</Text>
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={[styles.notifibtn]}>
                             <TouchableOpacity>
                                 <View>
-                                    <Icon name="navicon" size={30} color="black" />
+                                    <MaterialIcons name="notifications-none" size={30} color="black" />
                                 </View>
                             </TouchableOpacity>
                         </View>
                     </View>
-                    <View style={[styles.navright]}>
-                        <View style={[styles.rightcontent]}>
-                            <View>
-                                <TouchableOpacity>
-                                    <View style={[styles.postbtn]}>
-                                        <Text style={[styles.postbtntxt]}>Post property</Text>
-                                    </View>
-                                </TouchableOpacity>
-                            </View>
-                            <View style={[styles.notifibtn]}>
-                                <TouchableOpacity>
-                                    <View>
-                                        <MaterialIcons name="notifications-none" size={30} color="black" />
-                                    </View>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </View>
                 </View>
-            </SafeAreaView>
-        );
-    }
+            </View>
+        </SafeAreaView>
+    );
 }
+
 
 const styles = StyleSheet.create({
 
@@ -56,10 +61,10 @@ const styles = StyleSheet.create({
         top: 25,
         marginBottom: 10,
     },
-    navleft:{
+    navleft: {
 
     },
-    navright:{
+    navright: {
 
     },
     rightcontent: {
@@ -69,16 +74,18 @@ const styles = StyleSheet.create({
     leftcontent: {
         marginLeft: 14,
     },
-    notifibtn:{
-        marginLeft:16,
+    notifibtn: {
+        marginLeft: 16,
     },
-    postbtn:{
-        width:100,
-        height:25,
-        justifyContent:'center',
+    postbtn: {
+        width: 100,
+        height: 25,
+        justifyContent: 'center',
     },
-    postbtntxt:{
-        color:'hsl(217, 71%, 53%)',
-        fontWeight:'600',
+    postbtntxt: {
+        color: 'hsl(217, 71%, 53%)',
+        fontWeight: '600',
     },
 });
+
+export default Navbar;

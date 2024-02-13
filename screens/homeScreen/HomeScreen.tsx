@@ -18,6 +18,10 @@ import { Styles } from '../../Styles/GetTamaguiStyles';
 //APi
 import axiosInstance from '../../axiosInstance';
 
+//AsyncStorage
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import AddProperty from '../addProperty/AddProperty';
+
 const { width } = Dimensions.get('window');
 
 const HomeScreen = (props: any) => {
@@ -39,17 +43,20 @@ const HomeScreen = (props: any) => {
     }, [])
   );
 
+
   const fetchData = async () => {
+    const phoneNumber = await AsyncStorage.getItem('PhoneNumber');
     setRefreshing(true);
-    await axiosInstance.get('GetReactAddedFarms')
-      .then(response => {
-        const dataList = response.data;
-        if (dataList && dataList.length > 0) {
-          setPropertyDataList(dataList);
-        } else {
-          console.warn('Empty data received from the API');
-        }
-      })
+    await axiosInstance.post('GetReactAddedFarms', {
+      'phnumber': phoneNumber
+    }).then(response => {
+      const dataList = response.data;
+      if (dataList && dataList.length > 0) {
+        setPropertyDataList(dataList);
+      } else {
+        console.warn('Empty data received from the API');
+      }
+    })
       .catch(error => {
         console.error('Error fetching data:', error);
       });
@@ -68,7 +75,8 @@ const HomeScreen = (props: any) => {
   };
 
   const handelSearch = () => {
-    navigation.navigate(SearchUserData);
+    //navigation.navigate(SearchUserData);
+    navigation.navigate(AddProperty);
   }
 
   const favoritePressComplete = () => {
@@ -147,12 +155,13 @@ const HomeScreen = (props: any) => {
                   {propertyDataList.map((propertyData, index) => (
                     <View key={index}>
                       <DemoCard
-                        farmid={`${propertyData.farmid}`}
-                        description={`${propertyData.description}`}
-                        farmname={`${propertyData.farmname}`}
-                        address={`${propertyData.address}`}
+                        pid={`${propertyData.pid}`}
+                        pdescription={`${propertyData.pdescription}`}
+                        ptitle={`${propertyData.ptitle}`}
+                        address={`${propertyData.location}`}
                         imgurl={`${propertyData.imagpath}`}
-                        favorite={`${propertyData.favorite}`}
+                        favorite={`${propertyData.is_favorite}`}
+                        userid={`${propertyData.userid}`}
                         onFavoritePressComplete={favoritePressComplete}
                       />
                     </View>
@@ -169,14 +178,15 @@ const HomeScreen = (props: any) => {
 
 
 export function DemoCard(props: CardProps &
-{ farmname: string; description: string; address: string, imgurl: string; favorite: string; farmid: string, onFavoritePressComplete: any }) {
+{ ptitle: string; pdescription: string; address: string, imgurl: string; favorite: string; pid: string,userid:string, onFavoritePressComplete: any }) {
 
-  const { farmname, description, address, imgurl, favorite, farmid, onFavoritePressComplete, ...restProps } = props;
+  const { ptitle, pdescription, address, imgurl, favorite, pid, onFavoritePressComplete,userid, ...restProps } = props;
 
-  const favoritePress = async (favfarmid: string) => {
+  const favoritePress = async () => {
     try {
       const response = await axiosInstance.post('storeuserfavorite', {
-        farmid: favfarmid,
+        'pid': pid,
+        'userid':userid
       });
       if (response) {
         onFavoritePressComplete();
@@ -196,7 +206,7 @@ export function DemoCard(props: CardProps &
       size="$2" borderRadius={10}>
       <Card.Header padded>
         <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-          <TouchableOpacity onPress={() => favoritePress(farmid)} style={styles.favconatiner}>
+          <TouchableOpacity onPress={() => favoritePress()} style={styles.favconatiner}>
             <Icon style={{ margin: 5 }} type={Icons.FontAwesome}
               name={favorite === 'true' ? 'heart' : 'heart-o'}
               color={favorite === 'true' ? 'gold' : 'white'}
@@ -206,7 +216,7 @@ export function DemoCard(props: CardProps &
       </Card.Header>
       <Card.Footer margin={6}>
         <View>
-          <Text style={Styles.recttittxt}>{farmname}</Text>
+          <Text style={Styles.recttittxt}>{ptitle}</Text>
           <Text>{address}</Text>
         </View>
       </Card.Footer>
@@ -219,7 +229,7 @@ export function DemoCard(props: CardProps &
             uri: imgurl,
           }}
         />
-        <Text style={{ position: 'absolute', bottom: 10, left: 8, fontWeight: '500', color: Colors.white }}>{description}</Text>
+        <Text style={{ position: 'absolute', bottom: 10, left: 8, fontWeight: '500', color: Colors.white }}>{pdescription}</Text>
       </Card.Background>
     </Card>
   )
