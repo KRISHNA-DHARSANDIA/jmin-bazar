@@ -1,12 +1,36 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable prettier/prettier */
 import React, { useRef, useMemo, useCallback, useState, Component } from 'react';
-import { Animated, SafeAreaView, StyleSheet, Text, useWindowDimensions, FlatList, TextInput, TouchableOpacity, Image, StatusBar, RefreshControl, Platform } from 'react-native';
-import { Separator, ToggleGroup, View, YStack, XStack, Button } from 'tamagui';
+import {
+  Animated,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Image,
+  Platform,
+  Modal,
+} from 'react-native';
+import { Separator, ToggleGroup, View, YStack, XStack, Button, ScrollView } from 'tamagui';
 import Icon, { Icons } from '../../assets/Icon/Icons';
-import BottomSheet, { BottomSheetBackdrop, BottomSheetTextInput, BottomSheetScrollView, BottomSheetFlatList } from '@gorhom/bottom-sheet';
+import BottomSheet, {
+  BottomSheetBackdrop,
+  BottomSheetFlatList,
+} from '@gorhom/bottom-sheet';
 import SelectDropdown from 'react-native-select-dropdown';
-import { Camera, Image as img } from '@tamagui/lucide-icons'
+import { Camera, Option, Image as img } from '@tamagui/lucide-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+//ImagePicker
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+
+//ImageView
+import ImageView from "react-native-image-viewing";
+
+
+//APi
+import axiosInstance from '../../axiosInstance';
+//for log and let
+import axios from 'axios';
+
 
 const HEADER_MAX_HEIGHT = 200;
 const HEADER_MIN_HEIGHT = Platform.OS === 'ios' ? 60 : 50;
@@ -21,14 +45,16 @@ class AddProperty extends Component {
 
   constructor(props) {
     super(props);
+    this.StoreData = this.StoreData.bind(this);
     this.state = {
       scrollY: new Animated.Value(
         // iOS has negative initial scroll value because content inset...
         Platform.OS === 'ios' ? -HEADER_MAX_HEIGHT : 0,
       ),
-      refreshing: false,
       isBottomSheetOpen: false,
       selectedCity: 'Rajkot',
+      latitude: '0',
+      longitude: '0',
       selectedLocation: 'Aji Dem',
       purpose: 'Sell',
       propertyTy: 'Residential Plot',
@@ -42,6 +68,11 @@ class AddProperty extends Component {
       phoneTwo: '',
       countrycodeph1: '+91',
       countrycodeph2: '+90',
+
+      imgpathmobi: '',
+      imgvisiblemobi: false,
+      imgarrayPath: [],
+      selectedImageIndex: 0,
     };
   }
 
@@ -52,7 +83,7 @@ class AddProperty extends Component {
         type={Icons.AntDesign}
         name={'caretdown'}
         style={styles.dropdownicon}
-        color='green'
+        color="green"
       />
     );
   };
@@ -104,19 +135,139 @@ class AddProperty extends Component {
 
   handleph1countrycodeChnage = (value) => {
     this.setState({ countrycodeph1: value });
-  }
+  };
 
   handleph2countrycodeChnage = (value) => {
     this.setState({ countrycodeph2: value });
-  }
+  };
+
+
+
+  //get location lat and log
+  getLocation = async () => {
+    try {
+      const searchText = this.state.selectedCity;
+      const response = await axios.get(
+        `https://api.geoapify.com/v1/geocode/search?text=${searchText},Gujarat,india&apiKey=77133309d92c4352bd8c377cdf243e0c`
+      );
+
+      // Extracting latitude and longitude from response data
+      if (response && response.data && response.data.features.length > 0) {
+        const latitude = response.data.features[0].properties.lat;
+        const longitude = response.data.features[0].properties.lon;
+        return { latitude, longitude };
+      } else {
+        console.error('No location data found.');
+        return null;
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error.message);
+      return null;
+    }
+  };
+
+
+
+  handleMapClick = async () => {
+    const { navigation } = this.props;
+    try {
+      const location = await this.getLocation();
+      if (location) {
+        const { latitude, longitude } = location;
+        console.log(latitude, longitude);
+        navigation.navigate('MapLocation', {
+          lat: latitude,
+          log: longitude,
+        });
+      } else {
+        console.error('Location data is null.');
+      }
+    } catch (error) {
+      console.error('Error fetching location data:', error);
+    }
+  };
+
+  handleRemoveImage = (indexToRemove) => {
+    this.setState((prevState) => ({
+      imgarrayPath: prevState.imgarrayPath.filter((_, index) => index !== indexToRemove),
+    }));
+  };
+
+  handleImgfromGallery = async () => {
+    launchImageLibrary({ mediaType: 'photo', selectionLimit: 0 }, (response) => {
+      if (!response.didCancel) {
+        const newImages = response.assets.map((asset) => ({ uri: asset.uri }));
+        this.setState((prevState) => ({
+          imgarrayPath: [...prevState.imgarrayPath, ...newImages],
+        }));
+      }
+    });
+  };
+
+  handleimgFromCamera = async () => {
+    launchCamera({ mediaType: 'photo', selectionLimit: 0 }, (response) => {
+      if (!response.didCancel) {
+        const newImages = response.assets.map((asset) => ({ uri: asset.uri }));
+        this.setState((prevState) => ({
+          imgarrayPath: [...prevState.imgarrayPath, ...newImages],
+        }));
+      }
+    });
+  };
+
+  StoreData = async () => {
+
+    const phoneNumber = AsyncStorage.getItem('PhoneNumber');
+    const uuid = await AsyncStorage.getItem('UUID');
+
+    const propertyData = {
+      'uuid': uuid,
+      'purpose': this.state.purpose,
+      'ptype': this.state.propertyTy,
+      'city': this.state.selectedCity,
+      'location': this.state.selectedLocation,
+      'areasize': this.state.areaSize,
+      'totalprice': this.state.TotalPrice,
+      'possession': "true",
+      'ptitle': this.state.title,
+      'pdescription': this.state.desciption,
+      'imagpath': "/images/plot.jpg",
+      'email': this.state.email,
+      'contectone': this.state.countrycodeph1 + this.state.phoneOne,
+      'contecttwo': this.state.countrycodeph2 + this.state.phoneTwo
+
+
+    };
+
+    axiosInstance.post('storeproperty', propertyData)
+      .then(response => {
+        if (response.data === 'saved') {
+          console.log('New Property added successfully');
+        } else {
+          console.warn('Data is not stored');
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching datafdsfsd:', error);
+      });
+  };
 
   render() {
+
+    const { route } = this.props;
+
+    // if (route && route.params) {
+    //   const { params } = route;
+    //   // this.setState({ longitude: params.longitude });
+    //   // this.setState({ latitude: params.latitude });
+    // } else {
+    //   console.log('Params are undefined or not accessible');
+    // }
 
     const scrollY = Animated.add(
       this.state.scrollY,
       Platform.OS === 'ios' ? HEADER_MAX_HEIGHT : 0,
     );
-
     const headerTranslate = scrollY.interpolate({
       inputRange: [0, HEADER_SCROLL_DISTANCE],
       outputRange: [0, -HEADER_SCROLL_DISTANCE],
@@ -145,6 +296,8 @@ class AddProperty extends Component {
       outputRange: [0, 0, -8],
       extrapolate: 'clamp',
     });
+
+    const imgarrayPath = this.state.imgarrayPath;
 
     return (
       <>
@@ -274,7 +427,7 @@ class AddProperty extends Component {
                         </TouchableOpacity>
                       </View>
                       <View>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={this.handleMapClick}>
                           <Image
                             source={require('../../images/locationstatic.png')}
                             style={styles.staticimage}
@@ -344,7 +497,9 @@ class AddProperty extends Component {
                             style={styles.inputtxtprice}
                             onChangeText={this.handleTotalPriceChange}
                             value={this.state.TotalPrice}
-                            placeholder="Enter amount" />
+                            placeholder="Enter amount"
+                            keyboardType="number-pad"
+                          />
                         </View>
                         <View style={{ borderBottomWidth: 1, borderBottomColor: 'black', marginRight: 10, padding: 6 }}>
                           <Text style={{ fontSize: 16 }}>INR</Text>
@@ -424,13 +579,37 @@ class AddProperty extends Component {
                           <Text>Cover all areas of your property</Text>
                         </View>
                         <YStack ai="center" flexDirection="column" space="$3" justifyContent="space-between" alignItems="center" borderStyle="dotted" borderWidth="$1" borderColor={'lightgreen'} padding="$2.5" width={300}>
-                          <Button alignSelf="center" fontSize={15} color={'white'} icon={img} size="$4" width={"54%"} backgroundColor={'lightgreen'}>
+                          <Button alignSelf="center" fontSize={15} color={'white'} icon={img} size="$4" width={"54%"} backgroundColor={'lightgreen'} onPress={this.handleImgfromGallery}>
                             From Gallery
                           </Button>
-                          <Button alignSelf="center" fontSize={15} color={'lightgreen'} icon={Camera} size="$4" width={"54%"} variant="outlined">
+                          <Button alignSelf="center" fontSize={15} color={'lightgreen'} icon={Camera} size="$4" width={"54%"} variant="outlined" onPress={this.handleimgFromCamera}>
                             From Camera
                           </Button>
                         </YStack>
+                        {/*  */}
+                        <ScrollView horizontal>
+                          <XStack flexDirection='row'>
+                            {this.state.imgarrayPath.map((image, index) => (
+                              <View>
+                                <TouchableOpacity
+                                  key={index}
+                                  onPress={() => this.setState({ imgvisiblemobi: true, selectedImageIndex: index })}
+                                >
+                                  <Image source={image} style={{ width: 100, height: 100, margin: 10 }} />
+                                  <TouchableOpacity onPress={() => this.handleRemoveImage(index)} style={{ position: 'absolute', top: 0, right: 0, backgroundColor: '#e6eae7', width: 20, height: 20, borderRadius: 11, justifyContent: 'center', alignItems: 'center' }}>
+                                    <Icon style={{}} type={Icons.AntDesign} name="close" size={14} color={'balck'} />
+                                  </TouchableOpacity>
+                                </TouchableOpacity>
+                              </View>
+                            ))}
+                          </XStack>
+                        </ScrollView>
+                        <ImageView
+                          images={this.state.imgarrayPath}
+                          visible={this.state.imgvisiblemobi}
+                          imageIndex={this.state.selectedImageIndex}
+                          onRequestClose={() => this.setState({ imgvisiblemobi: false })}
+                        />
                       </View>
                     </View>
                   </View>
@@ -495,7 +674,7 @@ class AddProperty extends Component {
                               onChangeText={this.handlephoneoneChnage}
                               placeholder="0xx xxx xxxx"
                               keyboardType="number-pad"
-                              />
+                            />
                           </View>
                         </XStack>
                         <XStack ai="center" flexDirection="row" justifyContent='space-between' marginLeft={45}>
@@ -559,7 +738,7 @@ class AddProperty extends Component {
               },
             ]}
           >
-            <Text style={styles.maintitle}>Add Property</Text>
+            <Text style={styles.maintitle}>Post Property</Text>
             {/* <View style={{ width: 200 }}>
             <Text style={styles.subtitle}>Reach thousands of buyers and tenants in few steps.</Text>
           </View> */}
@@ -569,7 +748,7 @@ class AddProperty extends Component {
               <Button size="$3" width={180} height={45} backgroundColor={"$backgroundTransparent"}>
                 Save as Draft
               </Button>
-              <Button size="$3" width={180} height={45} backgroundColor={"#00aa54"} color={'white'}>
+              <Button size="$3" width={180} height={45} backgroundColor={"#00aa54"} color={'white'} onPress={this.StoreData}>
                 Post Ad
               </Button>
             </View>
@@ -577,8 +756,8 @@ class AddProperty extends Component {
         </View>
         <BScity
           bottomSheetRef={this.bottomSheetRef}
-          setIsBottomSheetOpen={(value: any) => this.setState({ isBottomSheetOpen: value })}
-          setSelectedCity={(city: any) => this.setState({ selectedCity: city })}
+          setIsBottomSheetOpen={(value) => this.setState({ isBottomSheetOpen: value })}
+          setSelectedCity={(city) => this.setState({ selectedCity: city })}
         />
       </>
     );
@@ -592,15 +771,15 @@ const BScity = ({ bottomSheetRef, setIsBottomSheetOpen, setSelectedCity }) => {
   const languages = [
     {
       id: 1,
-      title: 'Python',
+      title: 'Patan',
     },
     {
       id: 2,
-      title: 'Java',
+      title: 'Ahmedabad',
     },
     {
       id: 3,
-      title: 'C++',
+      title: 'Surat',
     },
     {
       id: 4,
@@ -608,37 +787,37 @@ const BScity = ({ bottomSheetRef, setIsBottomSheetOpen, setSelectedCity }) => {
     },
     {
       id: 5,
-      title: 'Ruby',
+      title: 'Rajkot',
     },
     {
       id: 6,
-      title: 'Scala',
+      title: 'Vadodara',
     },
     {
       id: 7,
-      title: 'Rust',
+      title: 'jamnagar',
     },
     {
       id: 8,
-      title: 'Perl',
+      title: 'junagadh',
     },
     {
       id: 9,
-      title: 'Swift',
+      title: 'jamnagar',
     },
     {
       id: 10,
-      title: 'TypeScript',
+      title: 'Morbi',
     },
   ];
 
   const [data, setData] = useState(languages);
   const [searchText, setSearchText] = useState('');
 
-  const searchFunction = (text: any) => {
+  const searchFunction = (text) => {
     setSearchText(text);
     text = text.toLowerCase();
-    if (text === "") {
+    if (text === '') {
       setData(languages);
     }
     else {
@@ -930,5 +1109,5 @@ const styles = StyleSheet.create({
     height: 'auto',
     justifyContent: 'center',
     padding: 10,
-  }
+  },
 });

@@ -7,6 +7,7 @@ import FirstLoad from '../screens/firstLoad/FirstLoad';
 import TabNavigator from './TabNavigator';
 import SearchUserData from '../screens/searchUserData/SearchUserData';
 import AddProperty from '../screens/addProperty/AddProperty';
+import MapLocation from '../screens/mapScreen/MapLocation';
 
 const Stack = createNativeStackNavigator();
 
@@ -21,6 +22,7 @@ const AppNavigator = () => {
             <Stack.Screen name="AddProperty" options={{ headerShown: false }}>
                 {props => <AddProperty {...props} scrollY={scrollY} />}
             </Stack.Screen>
+            <Stack.Screen name="MapLocation" component={MapLocation} options={{ headerShown: true, headerTitle: 'Mark Location on Map' }} />
         </Stack.Navigator>
     );
 };

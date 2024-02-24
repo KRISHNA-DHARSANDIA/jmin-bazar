@@ -72,6 +72,8 @@ const UserInfo: React.FC<UserInfoProps> = ({ route }) => {
           if (response.data !== 'Error') {
             AsyncStorage.setItem('PhoneNumber', ('+91' + phonenumber));
             AsyncStorage.setItem('LoginCheck', String(LoginCheck));
+            AsyncStorage.setItem('UUID',response.data.uuid);
+            console.log(response.data);
 
             getData();
             //Give User Login confirm
