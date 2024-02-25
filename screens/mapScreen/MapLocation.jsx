@@ -36,7 +36,7 @@ const MapLocation = ({ route }) => {
     };
 
     const handleRegionChangeComplete = (region) => {
-        console.log("Current Location - Latitude:", region.latitude, "Longitude:", region.longitude);
+        console.log('Current Location - Latitude:', region.latitude, 'Longitude:', region.longitude);
         setlatitude(region.latitude);
         setlogitude(region.longitude);
     };

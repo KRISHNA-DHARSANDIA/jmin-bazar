@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, { useRef, useMemo, useCallback, useState, Component } from 'react';
 import {
   Animated,
@@ -7,7 +8,7 @@ import {
   TouchableOpacity,
   Image,
   Platform,
-  Modal,
+  ActivityIndicator,
 } from 'react-native';
 import { Separator, ToggleGroup, View, YStack, XStack, Button, ScrollView } from 'tamagui';
 import Icon, { Icons } from '../../assets/Icon/Icons';
@@ -19,11 +20,18 @@ import SelectDropdown from 'react-native-select-dropdown';
 import { Camera, Option, Image as img } from '@tamagui/lucide-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+//LottieView
+import LottieView from 'lottie-react-native';
+
 //ImagePicker
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 
 //ImageView
-import ImageView from "react-native-image-viewing";
+import ImageView from 'react-native-image-viewing';
+
+//Firebase
+import { utils } from '@react-native-firebase/app';
+import storage, { firebase } from '@react-native-firebase/storage';
 
 
 //APi
@@ -45,6 +53,7 @@ class AddProperty extends Component {
 
   constructor(props) {
     super(props);
+
     this.StoreData = this.StoreData.bind(this);
     this.state = {
       scrollY: new Animated.Value(
@@ -73,7 +82,21 @@ class AddProperty extends Component {
       imgvisiblemobi: false,
       imgarrayPath: [],
       selectedImageIndex: 0,
+
+      //other
+      uploading: false,
+      setTransferredImg: 0,
+      dbImgStoreArr: []
+
     };
+  }
+
+  componentDidUpdate(prevProps) {
+    const { route } = this.props;
+    if (route !== prevProps.route && route.params) {
+      const { params } = route;
+      this.setState({ longitude: params.longitude.toString(), latitude: params.latitude.toString() });
+    }
   }
 
   renderCustomDropdownIcon = () => {
@@ -141,8 +164,6 @@ class AddProperty extends Component {
     this.setState({ countrycodeph2: value });
   };
 
-
-
   //get location lat and log
   getLocation = async () => {
     try {
@@ -165,8 +186,6 @@ class AddProperty extends Component {
       return null;
     }
   };
-
-
 
   handleMapClick = async () => {
     const { navigation } = this.props;
@@ -194,7 +213,7 @@ class AddProperty extends Component {
   };
 
   handleImgfromGallery = async () => {
-    launchImageLibrary({ mediaType: 'photo', selectionLimit: 0 }, (response) => {
+    launchImageLibrary({ mediaType: 'photo', selectionLimit: 5 }, (response) => {
       if (!response.didCancel) {
         const newImages = response.assets.map((asset) => ({ uri: asset.uri }));
         this.setState((prevState) => ({
@@ -215,9 +234,62 @@ class AddProperty extends Component {
     });
   };
 
+  generateUniqueFileName = () => {
+    const timestamp = new Date().getTime();
+    return `image_${timestamp}`;
+  };
+
+
+  imageUpload = async () => {
+    try {
+      this.setState({ uploading: true });
+      this.setState({ setTransferredImg: 0 });
+
+      const { imgarrayPath } = this.state;
+      const filepathinside = 'Images';
+
+      await Promise.all(imgarrayPath.map(async (image) => {
+        const UploadUri = image.uri;
+
+        // Add TimeStamp to file Name for uniqueness
+        let filename = UploadUri.substring(UploadUri.lastIndexOf('/') + 1);
+        const extension = filename.split('.').pop();
+        const name = filename.split('.').slice(0, -1).join('.');
+        filename = name + Date.now() + '.' + extension;
+
+        const storageRef = firebase.storage().ref(filepathinside).child(filename);
+        const task = storageRef.putFile(UploadUri);
+
+        task.on('state_changed', taskSnapshot => {
+          console.log(`${taskSnapshot.bytesTransferred} transferred out of ${taskSnapshot.totalBytes}`);
+        }, error => {
+          console.error('Error uploading image:', error);
+        });
+
+        await task;
+        const downloadURL = await storageRef.getDownloadURL();
+        this.state.dbImgStoreArr.push(downloadURL);
+      }));
+
+      this.setState({ uploading: false });
+    } catch (error) {
+      console.log('Error uploading image:', error);
+      this.setState({ uploading: false });
+    }
+  };
+
   StoreData = async () => {
 
-    const phoneNumber = AsyncStorage.getItem('PhoneNumber');
+    const { navigation } = this.props;
+
+    //Upload the Images in FireBase
+    await this.imageUpload();
+
+    const imagepathAll = this.state.dbImgStoreArr.join(',');
+
+    console.log(imagepathAll);
+
+    // const phoneNumber = AsyncStorage.getItem('PhoneNumber');
     const uuid = await AsyncStorage.getItem('UUID');
 
     const propertyData = {
@@ -228,15 +300,16 @@ class AddProperty extends Component {
       'location': this.state.selectedLocation,
       'areasize': this.state.areaSize,
       'totalprice': this.state.TotalPrice,
-      'possession': "true",
+      'possession': 'true',
       'ptitle': this.state.title,
       'pdescription': this.state.desciption,
-      'imagpath': "/images/plot.jpg",
       'email': this.state.email,
       'contectone': this.state.countrycodeph1 + this.state.phoneOne,
-      'contecttwo': this.state.countrycodeph2 + this.state.phoneTwo
-
-
+      'contecttwo': this.state.countrycodeph2 + this.state.phoneTwo,
+      'logitude': this.state.longitude,
+      'latitude': this.state.latitude,
+      'coverimagepath': this.state.dbImgStoreArr[0],
+      'imagePath': imagepathAll.toString(),
     };
 
     axiosInstance.post('storeproperty', propertyData)
@@ -246,23 +319,19 @@ class AddProperty extends Component {
         } else {
           console.warn('Data is not stored');
         }
+        this.setState({ uploading: false });
+        this.setState({ imgarrayPath: [] });
+        console.log('all Done ⭐⭐⭐⭐');
+
+        navigation.navigate('HomeScreen', {
+        });
       })
       .catch(error => {
-        console.error('Error fetching datafdsfsd:', error);
+        console.error('Error when Data Store:', error);
       });
   };
 
   render() {
-
-    const { route } = this.props;
-
-    // if (route && route.params) {
-    //   const { params } = route;
-    //   // this.setState({ longitude: params.longitude });
-    //   // this.setState({ latitude: params.latitude });
-    // } else {
-    //   console.log('Params are undefined or not accessible');
-    // }
 
     const scrollY = Animated.add(
       this.state.scrollY,
@@ -296,8 +365,6 @@ class AddProperty extends Component {
       outputRange: [0, 0, -8],
       extrapolate: 'clamp',
     });
-
-    const imgarrayPath = this.state.imgarrayPath;
 
     return (
       <>
@@ -455,7 +522,8 @@ class AddProperty extends Component {
                             style={styles.inputtxtsize}
                             value={this.state.areaSize}
                             onChangeText={this.handleAreaSizeChange}
-                            placeholder="Enter area size" />
+                            placeholder="Enter area size"
+                            keyboardType="number-pad" />
                         </View>
                         <View>
                           <SelectDropdown
@@ -600,6 +668,12 @@ class AddProperty extends Component {
                                     <Icon style={{}} type={Icons.AntDesign} name="close" size={14} color={'balck'} />
                                   </TouchableOpacity>
                                 </TouchableOpacity>
+                                {this.state.uploading &&
+                                  <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                                    <Text>{this.state.setTransferredImg} % complited</Text>
+                                    <ActivityIndicator size="large" color={'#0000ff'} />
+                                  </View>
+                                }
                               </View>
                             ))}
                           </XStack>
@@ -759,6 +833,17 @@ class AddProperty extends Component {
           setIsBottomSheetOpen={(value) => this.setState({ isBottomSheetOpen: value })}
           setSelectedCity={(city) => this.setState({ selectedCity: city })}
         />
+        {/* Loading Animation */}
+        {this.state.uploading &&
+          <View style={styles.animationContainer}>
+            <LottieView
+              style={{ width: 150, height: 150 }}
+              source={require('../../assets/Loading.json')}
+              autoPlay
+              loop
+            />
+          </View>
+        }
       </>
     );
   }
@@ -1110,4 +1195,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 10,
   },
+  animationContainer: {
+    flex: 1,
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+  }
 });

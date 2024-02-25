@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { SafeAreaView, Dimensions, StyleSheet, Text, RefreshControl, TouchableOpacity } from 'react-native';
 import { View, ScrollView, YStack, Image, Card, CardProps } from 'tamagui';
-import React, { useState,useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import CustomHeader from '../components/customHeader/CustomHeader';
 
@@ -15,6 +15,7 @@ const { width } = Dimensions.get('window');
 
 import Colors from '../constants/Colors';
 import { Styles } from '../Styles/GetTamaguiStyles';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const UserLike = () => {
 
@@ -35,16 +36,18 @@ const UserLike = () => {
 
   const fetchData = async () => {
     setRefreshing(true);
-    await axiosInstance.get('getusefavoritefarm')
-      .then(response => {
-        const dataList = response.data;
-        if (dataList && dataList.length > 0) {
-          setPropertyDataList(dataList);
-        } else {
-          console.log('Empty data received from the API');
-          setPropertyDataList([]);
-        }
-      })
+    const uuid = await AsyncStorage.getItem('UUID');
+    await axiosInstance.post('getusefavoritefarm', {
+      'uuid': uuid
+    }).then(response => {
+      const dataList = response.data;
+      if (dataList && dataList.length > 0) {
+        setPropertyDataList(dataList);
+      } else {
+        console.log('Empty data received from the API');
+        setPropertyDataList([]);
+      }
+    })
       .catch(error => {
         console.log('Error fetching data:', error);
       });
@@ -75,12 +78,13 @@ const UserLike = () => {
           {propertyDataList.map((propertyData, index) => (
             <DemoCard
               key={index}
-              farmid={`${propertyData.farmid}`}
-              description={`${propertyData.description}`}
-              farmname={`${propertyData.farmname}`}
+              curruid={`${propertyData.curruserid}`}
+              pid={`${propertyData.pid}`}
+              description={`${propertyData.pdescription}`}
+              farmname={`${propertyData.ptitle}`}
               address={`${propertyData.address}`}
-              imgurl={`${propertyData.imagpath}`}
-              favorite={`${propertyData.favorite}`}
+              imgurl={`${propertyData.coverimagepath}`}
+              favorite={`${'true'}`}
               onFavoritePressComplete={favoritePressComplete}
             />
           ))}
@@ -91,14 +95,15 @@ const UserLike = () => {
 }
 
 export function DemoCard(props: CardProps &
-{ farmname: string; description: string; address: string, imgurl: string; favorite: string; farmid: string, onFavoritePressComplete: any }) {
+{ farmname: string; description: string; address: string, imgurl: string; favorite: string; pid: string, curruid: string, onFavoritePressComplete: any }) {
 
-  const { farmname, description, address, imgurl, favorite, farmid, onFavoritePressComplete, ...restProps } = props;
+  const { farmname, description, address, imgurl, favorite, pid, onFavoritePressComplete, curruid, ...restProps } = props;
 
-  const favoritePress = async (favfarmid: string) => {
+  const favoritePress = async (favpid: string) => {
     try {
       const response = await axiosInstance.post('storeuserfavorite', {
-        farmid: favfarmid,
+        userid: curruid,
+        pid: favpid
       });
       if (response.status === 200) {
         console.log('scuesss');
@@ -119,7 +124,7 @@ export function DemoCard(props: CardProps &
       size="$2" borderRadius={10}>
       <Card.Header padded>
         <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-          <TouchableOpacity onPress={() => favoritePress(farmid)} style={styles.favconatiner}>
+          <TouchableOpacity onPress={() => favoritePress(pid)} style={styles.favconatiner}>
             <Icon style={{ margin: 5 }} type={Icons.FontAwesome}
               name={favorite === 'true' ? 'heart' : 'heart-o'}
               color={favorite === 'true' ? 'gold' : 'white'}
