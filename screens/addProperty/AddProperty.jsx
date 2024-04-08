@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useRef, useMemo, useCallback, useState, Component } from 'react';
+import React, { useRef, useMemo, useCallback, useState, Component, forwardRef } from 'react';
 import {
   Animated,
   StyleSheet,
@@ -38,6 +38,7 @@ import storage, { firebase } from '@react-native-firebase/storage';
 import axiosInstance from '../../axiosInstance';
 //for log and let
 import axios from 'axios';
+import { prepareUIRegistry } from 'react-native-reanimated/lib/typescript/reanimated2/frameCallback/FrameCallbackRegistryUI';
 
 
 const HEADER_MAX_HEIGHT = 200;
@@ -86,8 +87,19 @@ class AddProperty extends Component {
       //other
       uploading: false,
       setTransferredImg: 0,
-      dbImgStoreArr: []
+      dbImgStoreArr: [],
 
+      min_lat: 0,
+      max_lat: 0,
+      min_lon: 0,
+      max_lon: 0,
+
+      latitude_min: 0,
+      logitude_min: 0,
+
+      AreaName: [],
+      btdata: [],
+      currdttype: 'city',
     };
   }
 
@@ -119,7 +131,30 @@ class AddProperty extends Component {
     this.setState({ propertyTy: value });
   };
 
-  handleCitychange = () => {
+  handleCitychange = async () => {
+    const languages = [
+      'Patan',
+      'Ahmedabad',
+      'Surat',
+      'JavaScript',
+      'Rajkot',
+      'Vadodara',
+      'jamnagar',
+      'junagadh',
+      'jamnagar',
+      'Morbi',
+    ];
+
+    this.setState({ btdata: languages });
+    this.setState({ currdttype: 'city' });
+
+    this.bottomSheetRef.current.expand();
+    this.setState({ isBottomSheetOpen: true });
+  };
+
+  handleAreachange = () => {
+    this.setState({ currdttype: 'Area' });
+    this.setState({ btdata: this.state.AreaName });
     this.bottomSheetRef.current.expand();
     this.setState({ isBottomSheetOpen: true });
   };
@@ -168,35 +203,77 @@ class AddProperty extends Component {
   getLocation = async () => {
     try {
       const searchText = this.state.selectedCity;
+
       const response = await axios.get(
         `https://api.geoapify.com/v1/geocode/search?text=${searchText},Gujarat,india&apiKey=77133309d92c4352bd8c377cdf243e0c`
       );
 
       // Extracting latitude and longitude from response data
       if (response && response.data && response.data.features.length > 0) {
-        const latitude = response.data.features[0].properties.lat;
-        const longitude = response.data.features[0].properties.lon;
-        return { latitude, longitude };
+
+        this.setState({
+          logitude_min: response.data.features[0].properties.lon,
+          latitude_min: response.data.features[0].properties.lat,
+        });
+
+        this.setState({
+          min_lat: response.data.features[0].bbox[0],
+          max_lat: response.data.features[0].bbox[1],
+          min_lon: response.data.features[0].bbox[2],
+          max_lon: response.data.features[0].bbox[3],
+        });
+
       } else {
         console.error('No location data found.');
-        return null;
       }
     } catch (error) {
-      console.error('Error fetching data:', error.message);
-      return null;
+      console.error('Error fetching data in getLocation:', error.message);
+    }
+  };
+
+  handleback = () => {
+    const { navigation } = this.props;
+    navigation.pop();
+  }
+
+  handleAreaLocation = async () => {
+    try {
+      const min_lat = this.state.min_lat,
+        max_lat = this.state.max_lat,
+        min_lon = this.state.min_lon,
+        max_lon = this.state.max_lon;
+
+      console.log(min_lon, min_lat, max_lon, max_lat);
+
+      const response = await axios.get(
+        `https://api.geoapify.com/v2/places?categories=highway.residential&filter=rect:${min_lat},${max_lat},${min_lon},${max_lon}&limit=20&apiKey=77133309d92c4352bd8c377cdf243e0c`
+      );
+
+      this.state.AreaName = [];
+      if (response && response.data && response.data.features.length > 0) {
+        response.data.features.forEach(feature => {
+          if (feature.properties.name !== undefined && feature.properties.name !== '') {
+            this.state.AreaName.push(feature.properties.name);
+          }
+        });
+        console.log(this.state.AreaName);
+      } else {
+        console.error('No Location Area not data found.');
+      }
+    } catch (error) {
+      console.error('Error fetching data in AreaLocation:', error.message);
     }
   };
 
   handleMapClick = async () => {
     const { navigation } = this.props;
     try {
-      const location = await this.getLocation();
-      if (location) {
-        const { latitude, longitude } = location;
-        console.log(latitude, longitude);
+      const lat_min = this.state.latitude_min;
+      const log_min = this.state.logitude_min;
+      if (lat_min && log_min) {
         navigation.navigate('MapLocation', {
-          lat: latitude,
-          log: longitude,
+          lat: lat_min,
+          log: log_min,
         });
       } else {
         console.error('Location data is null.');
@@ -234,10 +311,6 @@ class AddProperty extends Component {
     });
   };
 
-  generateUniqueFileName = () => {
-    const timestamp = new Date().getTime();
-    return `image_${timestamp}`;
-  };
 
 
   imageUpload = async () => {
@@ -357,7 +430,7 @@ class AddProperty extends Component {
 
     const titleScale = scrollY.interpolate({
       inputRange: [0, HEADER_SCROLL_DISTANCE / 2, HEADER_SCROLL_DISTANCE],
-      outputRange: [1, 1, 0.8],
+      outputRange: [0.9, 0.9, 0.9],
       extrapolate: 'clamp',
     });
     const titleTranslate = scrollY.interpolate({
@@ -395,7 +468,7 @@ class AddProperty extends Component {
                   <View style={styles.Togglecontainer}>
                     <View style={styles.infocontainer}>
                       <View style={styles.iconcontainer}>
-                        <Icon style={{}} type={Icons.MaterialIcons} name="search" size={26} color={'gray'} />
+                        <Icon style={{}} type={Icons.Feather} name="check-circle" size={26} color={'gray'} />
                       </View>
                       <View>
                         <Text>Purpose</Text>
@@ -421,7 +494,7 @@ class AddProperty extends Component {
                   <View style={styles.bigTogglecontainer}>
                     <View style={styles.infocontainer}>
                       <View style={styles.iconcontainer}>
-                        <Icon style={styles.icon} type={Icons.MaterialIcons} name="search" size={26} color={'gray'} />
+                        <Icon style={styles.icon} type={Icons.MaterialIcons} name="search" size={22} color={'gray'} />
                       </View>
                       <View>
                         <Text>Select Property Type</Text>
@@ -477,9 +550,9 @@ class AddProperty extends Component {
                     <View>
                       <View style={styles.infocontainer}>
                         <View style={styles.iconcontainer}>
-                          <Icon style={{}} type={Icons.MaterialCommunityIcons} name="map-marker" size={22} color={'gray'} />
+                          <Icon style={{}} type={Icons.Feather} name="map" size={22} color={'gray'} />
                         </View>
-                        <TouchableOpacity style={styles.subcontainer} onPress={this.handleCitychange}>
+                        <TouchableOpacity style={styles.subcontainer} onPress={this.handleAreachange}>
                           <View>
                             <View>
                               <Text>Location</Text>
@@ -509,7 +582,7 @@ class AddProperty extends Component {
                   <View style={styles.Togglecontainer}>
                     <View style={styles.infocontainer}>
                       <View style={styles.iconcontainer}>
-                        <Icon style={{}} type={Icons.MaterialIcons} name="search" size={26} color={'gray'} />
+                        <Icon style={{}} type={Icons.Ionicons} name="resize" size={22} color={'gray'} />
                       </View>
                       <View>
                         <Text>Area Size</Text>
@@ -552,7 +625,7 @@ class AddProperty extends Component {
                   <View style={styles.Togglecontainer}>
                     <View style={styles.infocontainer}>
                       <View style={styles.iconcontainer}>
-                        <Icon style={{}} type={Icons.MaterialIcons} name="search" size={26} color={'gray'} />
+                        <Icon style={{}} type={Icons.Ionicons} name="pricetag-outline" size={22} color={'gray'} />
                       </View>
                       <View>
                         <Text>Total Price</Text>
@@ -581,7 +654,7 @@ class AddProperty extends Component {
                   <View style={styles.Togglecontainer}>
                     <View style={styles.infocontainer}>
                       <View style={styles.iconcontainer}>
-                        <Icon style={{}} type={Icons.MaterialIcons} name="search" size={26} color={'gray'} />
+                        <Icon style={{}} type={Icons.MaterialCommunityIcons} name="format-title" size={22} color={'gray'} />
                       </View>
                       <View>
                         <Text>Property Title</Text>
@@ -594,7 +667,7 @@ class AddProperty extends Component {
                             style={styles.inputtxtnorm}
                             onChangeText={this.handleTitleChange}
                             value={this.state.Title}
-                            placeholder="Enter Title eg. Beautiful new farm" />
+                            placeholder="Enter Title eg. Beautiful farm" />
                         </View>
                       </XStack>
                     </View>
@@ -605,7 +678,7 @@ class AddProperty extends Component {
                   <View style={styles.Togglecontainer}>
                     <View style={styles.infocontainer}>
                       <View style={styles.iconcontainer}>
-                        <Icon style={{}} type={Icons.MaterialIcons} name="search" size={26} color={'gray'} />
+                        <Icon style={{}} type={Icons.MaterialIcons} name="subtitles" size={22} color={'gray'} />
                       </View>
                       <View>
                         <Text>Property Description</Text>
@@ -647,10 +720,10 @@ class AddProperty extends Component {
                           <Text>Cover all areas of your property</Text>
                         </View>
                         <YStack ai="center" flexDirection="column" space="$3" justifyContent="space-between" alignItems="center" borderStyle="dotted" borderWidth="$1" borderColor={'lightgreen'} padding="$2.5" width={300}>
-                          <Button alignSelf="center" fontSize={15} color={'white'} icon={img} size="$4" width={"54%"} backgroundColor={'lightgreen'} onPress={this.handleImgfromGallery}>
+                          <Button alignSelf="center" fontSize={15} color={'white'} icon={img} size="$4" width={"60%"} scaleIcon={1.4} backgroundColor={'lightgreen'} onPress={this.handleImgfromGallery}>
                             From Gallery
                           </Button>
-                          <Button alignSelf="center" fontSize={15} color={'lightgreen'} icon={Camera} size="$4" width={"54%"} variant="outlined" onPress={this.handleimgFromCamera}>
+                          <Button alignSelf="center" fontSize={15} color={'lightgreen'} icon={Camera} size="$4" width={"60%"} scaleIcon={1.4} variant="outlined" onPress={this.handleimgFromCamera}>
                             From Camera
                           </Button>
                         </YStack>
@@ -693,7 +766,7 @@ class AddProperty extends Component {
                   <View style={styles.Togglecontainer}>
                     <View style={styles.infocontainer}>
                       <View style={styles.iconcontainer}>
-                        <Icon style={{}} type={Icons.MaterialIcons} name="search" size={26} color={'gray'} />
+                        <Icon style={{}} type={Icons.MaterialCommunityIcons} name="email-outline" size={22} color={'gray'} />
                       </View>
                       <View>
                         <Text>Email Address</Text>
@@ -717,7 +790,7 @@ class AddProperty extends Component {
                   <View style={styles.Togglecontainer}>
                     <View style={styles.infocontainer}>
                       <View style={styles.iconcontainer}>
-                        <Icon style={{}} type={Icons.MaterialIcons} name="search" size={26} color={'gray'} />
+                        <Icon style={{}} type={Icons.AntDesign} name="contacts" size={26} color={'gray'} />
                       </View>
                       <View>
                         <Text>Contact Number</Text>
@@ -801,6 +874,7 @@ class AddProperty extends Component {
               source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxMtNKejJpOzz_mev1tZEwXHT3Of54lEC-PiwoIsNIag&s' }}
             />
           </Animated.View>
+
           <Animated.View
             style={[
               styles.bar,
@@ -812,7 +886,14 @@ class AddProperty extends Component {
               },
             ]}
           >
-            <Text style={styles.maintitle}>Post Property</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <TouchableOpacity style={{ backgroundColor: '#00aa54', width: 36, height: 36, borderRadius: 18,alignItems:'center',justifyContent:'center' }} onPress={this.handleback}>
+                <Icon style={{}} type={Icons.Ionicons} name="arrow-back" size={30} color={'white'} />
+              </TouchableOpacity>
+              <View style={{ flex: 1, alignItems: 'center' }}>
+                <Text style={styles.maintitle}>Post Property</Text>
+              </View>
+            </View>
             {/* <View style={{ width: 200 }}>
             <Text style={styles.subtitle}>Reach thousands of buyers and tenants in few steps.</Text>
           </View> */}
@@ -831,7 +912,17 @@ class AddProperty extends Component {
         <BScity
           bottomSheetRef={this.bottomSheetRef}
           setIsBottomSheetOpen={(value) => this.setState({ isBottomSheetOpen: value })}
-          setSelectedCity={(city) => this.setState({ selectedCity: city })}
+          setSelectedCity={async (loc) => {
+            if (await this.state.currdttype === 'city') {
+              this.setState({ selectedCity: loc });
+              await this.getLocation();
+              await this.handleAreaLocation();
+            }
+            this.setState({ selectedLocation: loc });
+          }}
+          setBtData={this.state.btdata}
+          type={this.currdttype}
+          ref={this.bottomSheetRef}
         />
         {/* Loading Animation */}
         {this.state.uploading &&
@@ -849,55 +940,17 @@ class AddProperty extends Component {
   }
 };
 
-const BScity = ({ bottomSheetRef, setIsBottomSheetOpen, setSelectedCity }) => {
+const BScity = forwardRef((props, ref) => {
 
   const snapPoints = useMemo(() => ['50%', '90%'], []);
-
-  const languages = [
-    {
-      id: 1,
-      title: 'Patan',
-    },
-    {
-      id: 2,
-      title: 'Ahmedabad',
-    },
-    {
-      id: 3,
-      title: 'Surat',
-    },
-    {
-      id: 4,
-      title: 'JavaScript',
-    },
-    {
-      id: 5,
-      title: 'Rajkot',
-    },
-    {
-      id: 6,
-      title: 'Vadodara',
-    },
-    {
-      id: 7,
-      title: 'jamnagar',
-    },
-    {
-      id: 8,
-      title: 'junagadh',
-    },
-    {
-      id: 9,
-      title: 'jamnagar',
-    },
-    {
-      id: 10,
-      title: 'Morbi',
-    },
-  ];
-
+  let languages;
   const [data, setData] = useState(languages);
   const [searchText, setSearchText] = useState('');
+
+  setTimeout(() => {
+    setData(props.setBtData);
+    languages = props.setBtData;
+  }, 0);
 
   const searchFunction = (text) => {
     setSearchText(text);
@@ -906,26 +959,27 @@ const BScity = ({ bottomSheetRef, setIsBottomSheetOpen, setSelectedCity }) => {
       setData(languages);
     }
     else {
-      let filteredLanguages = languages.filter(language => (language.title.toLowerCase().startsWith(text)))
+      let filteredLanguages = languages.filter(language => (language.toLowerCase().startsWith(text)));
       setData(filteredLanguages);
     }
   }
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity onPress={() => selectCity(item)} style={styles.box}>
-      <Text style={styles.title}> {item.title} </Text>
+    <TouchableOpacity onPress={() => selectitm(item)} style={styles.box}>
+      <Text style={styles.title}> {item} </Text>
     </TouchableOpacity>
   );
 
-  const selectCity = (item) => {
-    setSelectedCity(item.title);
-    bottomSheetRef.current.close();
-    setIsBottomSheetOpen(false);
-  }
+  const selectitm = (item) => {
+    props.setSelectedCity(item);
+    props.bottomSheetRef.current.close();
+    props.setIsBottomSheetOpen(false);
+  };
 
-  const renderBackdrop = useCallback((props: any) => (
+
+  const renderBackdrop = useCallback((propsrd) => (
     <BottomSheetBackdrop
-      {...props}
+      {...propsrd}
       disappearsOnIndex={-1}
       appearsOnIndex={1}
     />
@@ -934,19 +988,19 @@ const BScity = ({ bottomSheetRef, setIsBottomSheetOpen, setSelectedCity }) => {
   return (
 
     <BottomSheet
-      ref={bottomSheetRef}
+      ref={ref}
       index={-1}
       snapPoints={snapPoints}
       enablePanDownToClose={true}
       backdropComponent={renderBackdrop}
     >
-      <Text style={styles.Ctitlelist}> Programming Languages </Text>
+      <Text style={styles.Ctitlelist}> Location </Text>
       <View style={styles.CBScontentContainer}>
         <View style={styles.searchBarContainer}>
           <TextInput
             style={styles.searchBar}
             placeholderTextColor="black"
-            placeholder="Search available languages"
+            placeholder="Search available Location"
             value={searchText}
             onChangeText={text => searchFunction(text)} />
         </View>
@@ -955,13 +1009,13 @@ const BScity = ({ bottomSheetRef, setIsBottomSheetOpen, setSelectedCity }) => {
           extraData={data}
           showsVerticalScrollIndicator={false}
           renderItem={renderItem}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item, index) => `${index}-${JSON.stringify(item)}`}
           contentContainerStyle={{ paddingBottom: 20 }}
         />
       </View>
     </BottomSheet>
-  )
-}
+  );
+});
 
 export default AddProperty;
 

@@ -178,15 +178,15 @@ const HomeScreen = (props: any) => {
 
 
 export function DemoCard(props: CardProps &
-{ ptitle: string; pdescription: string; address: string, imgurl: string; favorite: string; pid: string,userid:string, onFavoritePressComplete: any }) {
+{ ptitle: string; pdescription: string; address: string, imgurl: string; favorite: string; pid: string, userid: string, onFavoritePressComplete: any }) {
 
-  const { ptitle, pdescription, address, imgurl, favorite, pid, onFavoritePressComplete,userid, ...restProps } = props;
+  const { ptitle, pdescription, address, imgurl, favorite, pid, onFavoritePressComplete, userid, ...restProps } = props;
 
   const favoritePress = async () => {
     try {
       const response = await axiosInstance.post('storeuserfavorite', {
         'pid': pid,
-        'userid':userid
+        'userid': userid
       });
       if (response) {
         onFavoritePressComplete();
@@ -200,38 +200,40 @@ export function DemoCard(props: CardProps &
 
 
   return (
-    <Card bordered {...restProps} width={250}
-      height={200} scale={1}
-      // animation="bouncy"
-      size="$2" borderRadius={10}>
-      <Card.Header padded>
-        <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-          <TouchableOpacity onPress={() => favoritePress()} style={styles.favconatiner}>
-            <Icon style={{ margin: 5 }} type={Icons.FontAwesome}
-              name={favorite === 'true' ? 'heart' : 'heart-o'}
-              color={favorite === 'true' ? 'gold' : 'white'}
-              size={16} />
-          </TouchableOpacity>
-        </View>
-      </Card.Header>
-      <Card.Footer margin={6}>
-        <View>
-          <Text style={Styles.recttittxt}>{ptitle}</Text>
-          <Text>{address}</Text>
-        </View>
-      </Card.Footer>
-      <Card.Background style={styles.cardimgcontainer}>
-        <Image
-          resizeMethod="auto"
-          style={styles.image}
-          alignSelf="center"
-          source={{
-            uri: imgurl,
-          }}
-        />
-        <Text style={{ position: 'absolute', bottom: 10, left: 8, fontWeight: '500', color: Colors.white }}>{pdescription}</Text>
-      </Card.Background>
-    </Card>
+    <TouchableOpacity>
+      <Card bordered {...restProps} width={250}
+        height={200} scale={1}
+        // animation="bouncy"
+        size="$2" borderRadius={10}>
+        <Card.Header padded>
+          <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+            <TouchableOpacity onPress={() => favoritePress()} style={styles.favconatiner}>
+              <Icon style={{ margin: 5 }} type={Icons.FontAwesome}
+                name={favorite === 'true' ? 'heart' : 'heart-o'}
+                color={favorite === 'true' ? 'gold' : 'white'}
+                size={16} />
+            </TouchableOpacity>
+          </View>
+        </Card.Header>
+        <Card.Footer margin={6}>
+          <View>
+            <Text style={Styles.recttittxt}>{ptitle}</Text>
+            <Text>{address}</Text>
+          </View>
+        </Card.Footer>
+        <Card.Background style={styles.cardimgcontainer}>
+          <Image
+            resizeMethod="auto"
+            style={styles.image}
+            alignSelf="center"
+            source={{
+              uri: imgurl,
+            }}
+          />
+          <Text style={{ position: 'absolute', bottom: 10, left: 8, fontWeight: '500', color: Colors.white }}>{pdescription}</Text>
+        </Card.Background>
+      </Card>
+    </TouchableOpacity>
   )
 }
 
