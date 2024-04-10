@@ -69,7 +69,7 @@ const FirstLoad = ({navigation}) => {
         {/* Logo */}
         <View style={styles.logoContainer}>
           <Image
-            source={require('../../assets/comylogo.jpg')}
+            source={require('../../assets/comylogo.png')}
             style={styles.logo}
           />
         </View>

@@ -119,7 +119,7 @@ const HomeScreen = (props: any) => {
           <View justifyContent="center" alignItems="center">
             <Image
               source={{
-                uri: 'https://placekitten.com/200/300',
+                uri: 'https://marketplace.canva.com/EAEz1DG3SN4/1/0/1600w/canva-dark-blue-minimalist-for-sale-real-estate-poster-landscape-KfxlYRJ-jfE.jpg',
                 width: width - 10,
                 height: 220,
               }}
