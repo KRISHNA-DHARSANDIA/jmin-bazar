@@ -9,20 +9,28 @@ import {
 import React, { Component } from 'react';
 import Icon from 'react-native-vector-icons/EvilIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+
+import { useNavigation } from '@react-navigation/native';
 import AddProperty from '../../screens/addProperty/AddProperty';
 
 const Navbar = () => {
 
+    const navigation = useNavigation();
+
     // const handleaddproperty = () => {
     //     navigation.navigate(AddProperty);
     // }
+
+    const openDrawer = () => {
+        navigation.openDrawer();
+    };
 
     return (
         <SafeAreaView>
             <View style={[styles.mainNav]}>
                 <View style={[styles.navleft]}>
                     <View style={[styles.leftcontent]}>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={openDrawer}>
                             <View>
                                 <Icon name="navicon" size={30} color="black" />
                             </View>
@@ -58,8 +66,8 @@ const styles = StyleSheet.create({
     mainNav: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        top: 25,
-        marginBottom: 10,
+        top: 0,
+        marginVertical: 14,
     },
     navleft: {
 

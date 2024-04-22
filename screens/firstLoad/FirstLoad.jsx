@@ -124,8 +124,8 @@ const styles = StyleSheet.create({
     elevation: 5, // Only for Android
   },
   logo: {
-    width: 80,
-    height: 80,
+    width: 220,
+    height: 220,
     resizeMode: 'contain',
     borderRadius: 20,
   },

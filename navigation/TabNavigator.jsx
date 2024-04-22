@@ -1,12 +1,16 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable prettier/prettier */
-import React, { useMemo, useRef, useLayoutEffect } from 'react';
+import React, { useEffect, useRef, useLayoutEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Icon, { Icons } from '../assets/Icon/Icons';
 import Colors from '../constants/Colors';
 import * as Animatable from 'react-native-animatable';
+import { useNavigation } from '@react-navigation/native';
+import { DrawerActions } from '@react-navigation/native';
+
+import { TabActions } from '@react-navigation/native';
 
 //screen
 import HomeScreen from '../screens/homeScreen/HomeScreen';
@@ -46,9 +50,26 @@ const CustomTabBarButton = ({ children, onPress }) => (
 );
 
 const TabButton = (props) => {
+
+    const navigation = useNavigation();
+
     const { item, onPress, accessibilityState } = props;
     const { selected } = accessibilityState;
     const viewRef = useRef(null);
+
+    const routeName = item.route;
+
+    // useEffect(() => {
+    //     if (selected) {
+    //         if (routeName === 'HomeScreen') {
+    //             navigation.dispatch(DrawerActions.jumpTo('TabsDrawer'));
+    //         } else if (routeName === 'UserLike') {
+    //             navigation.dispatch(DrawerActions.jumpTo('UserLikeDrawer'));
+    //             navigation.dispatch(TabActions.jumpTo('UserLike'));
+    //         }
+    //         console.log("Selected Route Name:", routeName);
+    //     }
+    // }, [selected, routeName, navigation]);
 
     useLayoutEffect(() => {
         viewRef.current.animate({
@@ -75,7 +96,15 @@ const TabButton = (props) => {
     );
 };
 
-export default function TabNavigator() {
+export default function TabNavigator({ route }) {
+
+    const navigation = useNavigation();
+
+    let { initialTab } = route.params;
+
+    if (initialTab === undefined) {
+        initialTab = 'HomeScreen';
+    }
 
     const TabArr = [
         { route: 'HomeScreen', label: 'Home', type: Icons.Ionicons, activeIcon: 'home', inActiveIcon: 'home-outline', component: HomeScreen, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite },
@@ -91,6 +120,7 @@ export default function TabNavigator() {
     return (
         <Tab.Navigator
             shifting={false}
+            initialRouteName={initialTab}
             screenOptions={{
                 headerShown: false,
                 tabBarStyle: {

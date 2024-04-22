@@ -11,7 +11,7 @@ import Icon, { Icons } from '../../assets/Icon/Icons';
 
 //component
 import Navbar from '../../components/NavbarTop/Navbar';
-import SearchUserData from '../searchUserData/SearchUserData';
+// import SearchUserData from '../searchUserData/SearchUserData';
 import Colors from '../../constants/Colors';
 import { Styles } from '../../Styles/GetTamaguiStyles';
 
@@ -33,12 +33,10 @@ const HomeScreen = (props: any) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      // Use setTimeout if needed, but wrap the fetchData call inside the useCallback
       const fetchDataWithTimeout = async () => {
-        await new Promise(resolve => setTimeout(resolve, 1000)); // 100 milliseconds timeout
+        await new Promise(resolve => setTimeout(resolve, 1000));
         fetchData();
       };
-
       fetchDataWithTimeout();
     }, [])
   );
@@ -93,7 +91,7 @@ const HomeScreen = (props: any) => {
           <Navbar />
         </View>
         <View>
-          <View marginTop={10}>
+          {/* <View marginTop={10}>
             <YStack paddingVertical="$4" paddingHorizontal="$2" space="$3" {...props}>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} >
                 <XStack space="$2" justifyContent="space-between">
@@ -115,7 +113,7 @@ const HomeScreen = (props: any) => {
                 </XStack>
               </ScrollView>
             </YStack>
-          </View>
+          </View> */}
           <View justifyContent="center" alignItems="center">
             <Image
               source={{
@@ -163,6 +161,7 @@ const HomeScreen = (props: any) => {
                         favorite={`${propertyData.is_favorite}`}
                         userid={`${propertyData.userid}`}
                         onFavoritePressComplete={favoritePressComplete}
+                        navigation={navigation}
                       />
                     </View>
                   ))}
@@ -178,9 +177,10 @@ const HomeScreen = (props: any) => {
 
 
 export function DemoCard(props: CardProps &
-{ ptitle: string; pdescription: string; address: string, imgurl: string; favorite: string; pid: string, userid: string, onFavoritePressComplete: any }) {
+{ ptitle: string; pdescription: string; address: string, imgurl: string; favorite: string; pid: string, userid: string, onFavoritePressComplete: any, navigation: any }) {
 
-  const { ptitle, pdescription, address, imgurl, favorite, pid, onFavoritePressComplete, userid, ...restProps } = props;
+  const { ptitle, pdescription, address, imgurl, favorite, pid, onFavoritePressComplete, userid, navigation, ...restProps } = props;
+
 
   const favoritePress = async () => {
     try {
@@ -198,9 +198,14 @@ export function DemoCard(props: CardProps &
     }
   };
 
+  const handleResoucepage = () => {
+    navigation.push('ResourcePage', {
+      ptitle: ptitle, pdescription: pdescription, address: address, imgurl: imgurl, favorite: favorite, pid: pid, userid: userid,
+    });
+  };
 
   return (
-    <TouchableOpacity>
+    <TouchableOpacity onPress={handleResoucepage}>
       <Card bordered {...restProps} width={250}
         height={200} scale={1}
         // animation="bouncy"
