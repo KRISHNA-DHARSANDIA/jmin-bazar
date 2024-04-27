@@ -28,7 +28,7 @@ const FirstLoad = ({navigation}) => {
     // Redirect to the home screen if the internet connection is available
     const delay = setTimeout(() => {
       if (isConnected === true) {
-        navigation.navigate('TabNavigator');
+        navigation.navigate('DrawerScreen');
       } else {
         Alert.alert(
           'No Internet',

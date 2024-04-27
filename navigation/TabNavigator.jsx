@@ -100,11 +100,11 @@ export default function TabNavigator({ route }) {
 
     const navigation = useNavigation();
 
-    let { initialTab } = route.params;
+    // let { initialTab } = route.params;
 
-    if (initialTab === undefined) {
-        initialTab = 'HomeScreen';
-    }
+    // if (initialTab === undefined) {
+    //     initialTab = 'HomeScreen';
+    // }
 
     const TabArr = [
         { route: 'HomeScreen', label: 'Home', type: Icons.Ionicons, activeIcon: 'home', inActiveIcon: 'home-outline', component: HomeScreen, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite },
@@ -120,7 +120,7 @@ export default function TabNavigator({ route }) {
     return (
         <Tab.Navigator
             shifting={false}
-            initialRouteName={initialTab}
+            initialRouteName={'HomeScreen'}
             screenOptions={{
                 headerShown: false,
                 tabBarStyle: {

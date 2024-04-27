@@ -9,6 +9,7 @@ import SearchUserData from '../screens/searchUserData/SearchUserData';
 import AddProperty from '../screens/addProperty/AddProperty';
 import MapLocation from '../screens/mapScreen/MapLocation';
 import ResourcePage from '../screens/resourcePage/ResourcePage';
+import DrawerNavigator from './DrawerNavigator';
 
 const Stack = createNativeStackNavigator();
 
@@ -18,7 +19,8 @@ const AppNavigator = () => {
     return (
         <Stack.Navigator initialRouteName="FirstLoad">
             <Stack.Screen name="FirstLoad" component={FirstLoad} options={{ headerShown: false }} />
-            <Stack.Screen name="TabNavigator" component={TabNavigator} options={{ headerShown: false }} />
+            {/* <Stack.Screen name="TabNavigator" component={TabNavigator} options={{ headerShown: false }} /> */}
+            <Stack.Screen name="DrawerScreen" component={DrawerNavigator} options={{ headerShown: false }} />
             <Stack.Screen name="SearchUserData" component={SearchUserData} options={{ headerTitle: null }} />
             <Stack.Screen name="AddProperty" options={{ headerShown: false }}>
                 {props => <AddProperty {...props} scrollY={scrollY} />}

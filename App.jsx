@@ -26,8 +26,7 @@ const App = () => {
         <BottomSheetModalProvider>
           <TamaguiProvider config={config}>
             <NavigationContainer>
-              <DrawerNavigator />
-              {/* <AppNavigator /> */}
+              <AppNavigator />
             </NavigationContainer>
           </TamaguiProvider>
         </BottomSheetModalProvider>

@@ -9,6 +9,7 @@ import {
   Image,
   Platform,
   ActivityIndicator,
+  Dimensions,
 } from 'react-native';
 import { Separator, ToggleGroup, View, YStack, XStack, Button, ScrollView } from 'tamagui';
 import Icon, { Icons } from '../../assets/Icon/Icons';
@@ -19,6 +20,9 @@ import BottomSheet, {
 import SelectDropdown from 'react-native-select-dropdown';
 import { Camera, Option, Image as img } from '@tamagui/lucide-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+//get current with of device
+const { width } = Dimensions.get('window');
 
 //LottieView
 import LottieView from 'lottie-react-native';
@@ -62,6 +66,7 @@ class AddProperty extends Component {
         Platform.OS === 'ios' ? -HEADER_MAX_HEIGHT : 0,
       ),
       isBottomSheetOpen: false,
+      pid: 0,
       selectedCity: 'Rajkot',
       latitude: '0',
       longitude: '0',
@@ -101,6 +106,60 @@ class AddProperty extends Component {
       btdata: [],
       currdttype: 'city',
     };
+  }
+
+  componentDidMount() {
+    const { route } = this.props;
+    const params = route.params;
+
+    if (params !== undefined) {
+      const pdata = params[0];
+      if (pdata) {
+
+        //make fromatted image path
+        const imagePathString = pdata.imagpath;
+
+        let imagePathArray, copeimagePathArray;
+
+        if (imagePathString) {
+          if (imagePathString.includes(',')) {
+            imagePathArray = imagePathString.split(',').map(path => path.trim());
+            copeimagePathArray = imagePathArray; //crete cope of normal array which is used in feature check 
+            imagePathArray = imagePathArray.map(url => ({ uri: url }));
+          } else {
+            // If there's only one path, put it into an array
+            imagePathArray = [{ uri: imagePathString }];
+            copeimagePathArray = [imagePathString];
+          }
+        } else {
+          // Handle the case where imagePathString is undefined or null
+          console.error('imagePathString is undefined or null');
+          imagePathArray = [];
+          copeimagePathArray = [];
+        }
+
+        const formattedUrls = imagePathArray;
+
+        this.setState({
+          pid: pdata.pid,
+          purpose: pdata.purpose,
+          propertyTy: pdata.ptype,
+          selectedCity: pdata.city,
+          selectedLocation: pdata.location,
+          areaSize: pdata.areasize.toString(),
+          TotalPrice: pdata.totalprice.toString(),
+          title: pdata.ptitle,
+          desciption: pdata.pdescription,
+          imgarrayPath: formattedUrls,//array
+          email: pdata.email,
+          phoneOne: pdata.contectone.slice(3),
+          phoneTwo: pdata.contecttwo.slice(3),
+          logitude_min: pdata.longitude,
+          latitude_min: pdata.latitude,
+          dbImgStoreArr: copeimagePathArray,
+        });
+      }
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -233,8 +292,8 @@ class AddProperty extends Component {
 
   handleback = () => {
     const { navigation } = this.props;
-    navigation.pop();
-  }
+    navigation.goBack();
+  };
 
   handleAreaLocation = async () => {
     try {
@@ -318,30 +377,93 @@ class AddProperty extends Component {
       this.setState({ uploading: true });
       this.setState({ setTransferredImg: 0 });
 
-      const { imgarrayPath } = this.state;
+      const { imgarrayPath, dbImgStoreArr } = this.state;
       const filepathinside = 'Images';
 
-      await Promise.all(imgarrayPath.map(async (image) => {
-        const UploadUri = image.uri;
+      // Track which images to delete
+      const imagesToDelete = [];
 
-        // Add TimeStamp to file Name for uniqueness
-        let filename = UploadUri.substring(UploadUri.lastIndexOf('/') + 1);
-        const extension = filename.split('.').pop();
-        const name = filename.split('.').slice(0, -1).join('.');
-        filename = name + Date.now() + '.' + extension;
+      console.log('this is currnet selected image');
+      console.log(imgarrayPath);
+      console.log('⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐');
 
-        const storageRef = firebase.storage().ref(filepathinside).child(filename);
-        const task = storageRef.putFile(UploadUri);
+      console.log('this is dbImgSTore');
 
-        task.on('state_changed', taskSnapshot => {
-          console.log(`${taskSnapshot.bytesTransferred} transferred out of ${taskSnapshot.totalBytes}`);
-        }, error => {
-          console.error('Error uploading image:', error);
-        });
+      // Loop through existing paths to check for deletions
+      dbImgStoreArr.forEach((existingPath, index) => {
+        // Extract filename from existing path
+        const filename = existingPath;
 
-        await task;
-        const downloadURL = await storageRef.getDownloadURL();
-        this.state.dbImgStoreArr.push(downloadURL);
+        console.log(filename);
+        console.log('-------------');
+
+        if (!imgarrayPath.some(image => image.uri.includes(filename))) {
+          // If existing path is not in the new paths, mark it for deletion
+          imagesToDelete.push(existingPath);
+          // Remove the corresponding path from dbImgStoreArr
+          dbImgStoreArr.splice(index, 1);
+
+          console.log('delete this imge from firebase ' + imagesToDelete);
+        }
+      });
+
+      // Delete images marked for deletion from Firebase Storage
+      await Promise.all(imagesToDelete.map(async (path) => {
+        // Extract filename from path
+        // const filename = path.substring(path.lastIndexOf('/') + 1);
+        // const storageRef = firebase.storage().ref(filepathinside).child(filename);
+        // // Delete the file
+        // await storageRef.delete();
+
+        try {
+          const fileUrl = path;
+          const fileRef = firebase.storage().refFromURL(fileUrl);
+
+          const exist = await fileRef.getMetadata();
+
+          if (exist) {
+            // Delete the file
+            await fileRef.delete().then(() => {
+              console.log('File Deleted from Addperoperty whcih remove by user');
+            });
+          }
+        }
+        catch (error) {
+          if (error.code === 'storage/object-not-found') {
+            console.log('File does not exist.');
+          } else {
+            console.error('Error deleting file:', error);
+          }
+        }
+      }));
+
+      // Upload new or updated images
+      await Promise.all(imgarrayPath.map(async (image, index) => {
+        const existingPath = dbImgStoreArr[index];
+        const newImagePath = image.uri;
+
+        if (!existingPath || !existingPath.includes(newImagePath)) {
+          // Add TimeStamp to file Name for uniqueness
+          let filename = newImagePath.substring(newImagePath.lastIndexOf('/') + 1);
+          const extension = filename.split('.').pop();
+          const name = filename.split('.').slice(0, -1).join('.');
+          filename = name + Date.now() + '.' + extension;
+
+          // Upload new image to Firebase Storage
+          const storageRef = firebase.storage().ref(filepathinside).child(filename);
+          const task = storageRef.putFile(newImagePath);
+
+          task.on('state_changed', taskSnapshot => {
+            console.log(`${taskSnapshot.bytesTransferred} transferred out of ${taskSnapshot.totalBytes}`);
+          }, error => {
+            console.error('Error uploading image:', error);
+          });
+
+          await task;
+          const downloadURL = await storageRef.getDownloadURL();
+          //this.state.dbImgStoreArr.push(downloadURL);
+          dbImgStoreArr[index] = downloadURL;
+        }
       }));
 
       this.setState({ uploading: false });
@@ -360,12 +482,11 @@ class AddProperty extends Component {
 
     const imagepathAll = this.state.dbImgStoreArr.join(',');
 
-    console.log(imagepathAll);
-
     // const phoneNumber = AsyncStorage.getItem('PhoneNumber');
     const uuid = await AsyncStorage.getItem('UUID');
 
-    const propertyData = {
+    const pdata = {
+      'pid': this.state.pid,
       'uuid': uuid,
       'purpose': this.state.purpose,
       'ptype': this.state.propertyTy,
@@ -385,7 +506,7 @@ class AddProperty extends Component {
       'imagePath': imagepathAll.toString(),
     };
 
-    axiosInstance.post('storeproperty', propertyData)
+    axiosInstance.post('storeproperty', pdata)
       .then(response => {
         if (response.data === 'saved') {
           console.log('New Property added successfully');
@@ -666,7 +787,7 @@ class AddProperty extends Component {
                           <TextInput
                             style={styles.inputtxtnorm}
                             onChangeText={this.handleTitleChange}
-                            value={this.state.Title}
+                            value={this.state.title}
                             placeholder="Enter Title eg. Beautiful farm" />
                         </View>
                       </XStack>
@@ -720,17 +841,17 @@ class AddProperty extends Component {
                           <Text>Cover all areas of your property</Text>
                         </View>
                         <YStack ai="center" flexDirection="column" space="$3" justifyContent="space-between" alignItems="center" borderStyle="dotted" borderWidth="$1" borderColor={'lightgreen'} padding="$2.5" width={300}>
-                          <Button alignSelf="center" fontSize={15} color={'white'} icon={img} size="$4" width={"60%"} scaleIcon={1.4} backgroundColor={'lightgreen'} onPress={this.handleImgfromGallery}>
+                          <Button alignSelf="center" fontSize={15} color={'white'} icon={img} size="$4" width={'60%'} scaleIcon={1.4} backgroundColor={'lightgreen'} onPress={this.handleImgfromGallery}>
                             From Gallery
                           </Button>
-                          <Button alignSelf="center" fontSize={15} color={'lightgreen'} icon={Camera} size="$4" width={"60%"} scaleIcon={1.4} variant="outlined" onPress={this.handleimgFromCamera}>
+                          <Button alignSelf="center" fontSize={15} color={'lightgreen'} icon={Camera} size="$4" width={'60%'} scaleIcon={1.4} variant="outlined" onPress={this.handleimgFromCamera}>
                             From Camera
                           </Button>
                         </YStack>
                         {/*  */}
                         <ScrollView horizontal>
-                          <XStack flexDirection='row'>
-                            {this.state.imgarrayPath.map((image, index) => (
+                          <XStack flexDirection="row">
+                            {this.state.imgarrayPath.length > 0 && this.state.imgarrayPath.map((image, index) => (
                               <View>
                                 <TouchableOpacity
                                   key={index}
@@ -797,7 +918,7 @@ class AddProperty extends Component {
                       </View>
                     </View>
                     <View>
-                      <YStack ai="center" flexDirection="column" justifyContent='space-between' >
+                      <YStack ai="center" flexDirection="column" justifyContent='space-between'>
                         <XStack ai="center" flexDirection="row" justifyContent='space-between' marginLeft={45}>
                           <SelectDropdown
                             data={countrycode}
@@ -887,7 +1008,7 @@ class AddProperty extends Component {
             ]}
           >
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <TouchableOpacity style={{ backgroundColor: '#00aa54', width: 36, height: 36, borderRadius: 18,alignItems:'center',justifyContent:'center' }} onPress={this.handleback}>
+              <TouchableOpacity style={{ backgroundColor: '#00aa54', width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' }} onPress={this.handleback}>
                 <Icon style={{}} type={Icons.Ionicons} name="arrow-back" size={30} color={'white'} />
               </TouchableOpacity>
               <View style={{ flex: 1, alignItems: 'center' }}>
@@ -900,11 +1021,11 @@ class AddProperty extends Component {
           </Animated.View>
           <View style={styles.bottombar}>
             <View flexDirection='row' justifyContent='space-between'>
-              <Button size="$3" width={180} height={45} backgroundColor={"$backgroundTransparent"}>
+              {/* <Button size="$3" width={180} height={45} backgroundColor={"$backgroundTransparent"}>
                 Save as Draft
-              </Button>
-              <Button size="$3" width={180} height={45} backgroundColor={"#00aa54"} color={'white'} onPress={this.StoreData}>
-                Post Ad
+              </Button> */}
+              <Button size="$3" width={width - 26} height={45} fontSize={16} backgroundColor={'#00aa54'} color={'white'} onPress={this.StoreData}>
+                Post Property Advertisement
               </Button>
             </View>
           </View>

@@ -15,7 +15,7 @@ import { Styles } from '../../Styles/GetTamaguiStyles';
 
 
 //Alert 
-import { useToast } from "react-native-toast-notifications";
+import { useToast } from 'react-native-toast-notifications';
 
 //AsyncStorage
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -78,7 +78,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ route }) => {
             getData();
             //Give User Login confirm
             return (
-              toast.show("Login successfully",{
+              toast.show('Login successfully',{
                 type: 'normal',
                 placement: 'bottom',
                 duration: 2000,
@@ -89,7 +89,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ route }) => {
           }
           else {
             return (
-              toast.show("Something going Wrong :D",{
+              toast.show('Something going Wrong :D',{
                 type: 'normal',
                 placement: 'bottom',
                 duration: 2000,
@@ -159,7 +159,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ route }) => {
 
           //Give User logout confirm
           return (
-            toast.show("Logout SuccesssFully 🥲",{
+            toast.show('Logout SuccesssFully 🥲',{
               type: 'normal',
               placement: 'bottom',
               duration: 2000,
@@ -170,7 +170,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ route }) => {
         }
         else {
           return (
-            toast.show("Something Going wrong 🦖",{
+            toast.show('Something Going wrong 🦖',{
               type: 'normal',
               placement: 'bottom',
               duration: 2000,
