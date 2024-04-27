@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import { View, Text, Image, Dimensions, StyleSheet, FlatList, SafeAreaView, TouchableOpacity } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Icon, { Icons } from '../../assets/Icon/Icons';
@@ -12,6 +13,10 @@ import { useToast } from 'react-native-toast-notifications';
 import storage, { firebase } from '@react-native-firebase/storage';
 
 const { width } = Dimensions.get('window');
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+
 
 const DATA = [
     {
@@ -40,6 +45,8 @@ const DATA = [
         longitude: 73.1912969984114,
     },
 ];
+
+
 
 
 const Item = ({ propertydt }) => {
@@ -110,7 +117,7 @@ const Item = ({ propertydt }) => {
     const handleEditProperty = async () => {
         //Form Database
         try {
-            const response = await axiosInstance.get(`getSpecificPropertyData?pid=+${26}`);
+            const response = await axiosInstance.get(`getSpecificPropertyData?pid=+${propertydt.pid}`);
             if (response) {
                 navigation.navigate('AddProperty', response.data);
             } else {
@@ -134,12 +141,12 @@ const Item = ({ propertydt }) => {
             <View style={styles.imgcontainer}>
                 <Image
                     style={styles.covimge}
-                    source={{ uri: propertydt.coverimgepath }}
+                    source={{ uri: propertydt.coverimagepath }}
                 />
             </View>
             <View style={styles.detailscontainer}>
                 <Text style={styles.title}>{propertydt.ptitle}</Text>
-                <Text style={styles.descrip}>{propertydt.description}</Text>
+                <Text style={styles.descrip}>{propertydt.pdescription}</Text>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     <Text style={styles.price}>{propertydt.totalprice}</Text>
                     <Text style={styles.postdate}>{propertydt.posting_date}</Text>
@@ -191,12 +198,42 @@ const MyProperties = (props) => {
     const navigation = useNavigation();
 
     const [isEmptyProperty, setEmptyProperty] = useState(false);
+    const [usallproperty, setusallproperty] = useState(null);
 
     useEffect(() => {
-        if (DATA === null) {
-            setEmptyProperty(true);
-        }
+
+        //call function to get all userProperty
+        const getdata = async () => {
+            try {
+                const UUID = await AsyncStorage.getItem('UUID');
+                if (UUID !== null) {
+                    const respose = await axiosInstance.get(`getUserProperty?uuid=${UUID}`);
+                    setusallproperty(respose.data);
+                    console.log(respose.data);
+                }
+                else {
+                    if (usallproperty === null) {
+                        setEmptyProperty(true);
+                    }
+                }
+            }
+            catch (error) {
+                console.log('Error in Myproperties' + error);
+            }
+        };
+        //getdata();
+
+        const listener = navigation.addListener('focus', () => {
+            getdata();
+        });
+
+        // Clean up the listener when the component unmounts
+        return () => {
+            listener();
+        };
+
     }, []);
+
 
     //Upload buttton click
     const handleUploadbtn = () => {
@@ -227,7 +264,7 @@ const MyProperties = (props) => {
             ) : (
                 <View>
                     <FlatList
-                        data={DATA}
+                        data={usallproperty}
                         renderItem={({ item }) => <Item propertydt={item} />}
                         keyExtractor={item => item.pid}
                     />
@@ -272,7 +309,6 @@ const styles = StyleSheet.create({
     imgcontainer: {
         width: 120,
         height: 120,
-        borderColor: 'white',
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -285,6 +321,7 @@ const styles = StyleSheet.create({
     {
         marginTop: 10,
         justifyContent: 'flex-start',
+        width: 250,
     },
     commnbutton: {
         width: 34,

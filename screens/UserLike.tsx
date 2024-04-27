@@ -26,10 +26,9 @@ const UserLike = () => {
     React.useCallback(() => {
       // Use setTimeout if needed, but wrap the fetchData call inside the useCallback
       const fetchDataWithTimeout = async () => {
-        await new Promise(resolve => setTimeout(resolve, 1000)); // 100 milliseconds timeout
+        await new Promise(resolve => setTimeout(resolve, 1000)); // 1 second
         fetchData();
       };
-
       fetchDataWithTimeout();
     }, [])
   );
@@ -160,7 +159,7 @@ const styles = StyleSheet.create({
     height: 200,
     borderRadius: 10,
     overflow: 'hidden',
-    backgroundColor: 'red'
+    // backgroundColor: 'red'
   },
   image: {
     flex: 1,

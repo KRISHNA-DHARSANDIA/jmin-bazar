@@ -500,8 +500,8 @@ class AddProperty extends Component {
       'email': this.state.email,
       'contectone': this.state.countrycodeph1 + this.state.phoneOne,
       'contecttwo': this.state.countrycodeph2 + this.state.phoneTwo,
-      'logitude': this.state.longitude,
-      'latitude': this.state.latitude,
+      'logitude': this.state.logitude_min.toString(),
+      'latitude': this.state.latitude_min.toString(),
       'coverimagepath': this.state.dbImgStoreArr[0],
       'imagePath': imagepathAll.toString(),
     };
