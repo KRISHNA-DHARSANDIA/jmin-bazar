@@ -70,7 +70,7 @@ class AddProperty extends Component {
       selectedCity: 'Rajkot',
       latitude: '0',
       longitude: '0',
-      selectedLocation: 'Aji Dem',
+      selectedLocation: '',
       purpose: 'Sell',
       propertyTy: 'Residential Plot',
       areaSize: '',
@@ -94,10 +94,10 @@ class AddProperty extends Component {
       setTransferredImg: 0,
       dbImgStoreArr: [],
 
-      min_lat: 0,
-      max_lat: 0,
-      min_lon: 0,
-      max_lon: 0,
+      min_lat: 70.6428377,
+      max_lat: 22.1453263,
+      min_lon: 70.9628377,
+      max_lon: 22.4653263,
 
       latitude_min: 0,
       logitude_min: 0,
@@ -105,6 +105,8 @@ class AddProperty extends Component {
       AreaName: [],
       btdata: [],
       currdttype: 'city',
+
+      issubmit: false,
     };
   }
 
@@ -195,7 +197,6 @@ class AddProperty extends Component {
       'Patan',
       'Ahmedabad',
       'Surat',
-      'JavaScript',
       'Rajkot',
       'Vadodara',
       'jamnagar',
@@ -211,7 +212,8 @@ class AddProperty extends Component {
     this.setState({ isBottomSheetOpen: true });
   };
 
-  handleAreachange = () => {
+  handleAreachange = async () => {
+    await this.handleAreaLocation();
     this.setState({ currdttype: 'Area' });
     this.setState({ btdata: this.state.AreaName });
     this.bottomSheetRef.current.expand();
@@ -418,7 +420,6 @@ class AddProperty extends Component {
         try {
           const fileUrl = path;
           const fileRef = firebase.storage().refFromURL(fileUrl);
-
           const exist = await fileRef.getMetadata();
 
           if (exist) {
@@ -477,52 +478,62 @@ class AddProperty extends Component {
 
     const { navigation } = this.props;
 
-    //Upload the Images in FireBase
-    await this.imageUpload();
+    this.setState({ issubmit: true });
 
-    const imagepathAll = this.state.dbImgStoreArr.join(',');
+    if (this.state.selectedLocation !== '' && this.state.areaSize !== '' && this.state.TotalPrice !== ''
+      && this.state.title !== '' && this.state.desciption !== '' && this.state.imgarrayPath.length !== 0
+      && (this.state.phoneOne !== '' || this.state.phoneTwo !== '')) {
 
-    // const phoneNumber = AsyncStorage.getItem('PhoneNumber');
-    const uuid = await AsyncStorage.getItem('UUID');
+      //Upload the Images in FireBase
+      await this.imageUpload();
 
-    const pdata = {
-      'pid': this.state.pid,
-      'uuid': uuid,
-      'purpose': this.state.purpose,
-      'ptype': this.state.propertyTy,
-      'city': this.state.selectedCity,
-      'location': this.state.selectedLocation,
-      'areasize': this.state.areaSize,
-      'totalprice': this.state.TotalPrice,
-      'possession': 'true',
-      'ptitle': this.state.title,
-      'pdescription': this.state.desciption,
-      'email': this.state.email,
-      'contectone': this.state.countrycodeph1 + this.state.phoneOne,
-      'contecttwo': this.state.countrycodeph2 + this.state.phoneTwo,
-      'logitude': this.state.logitude_min.toString(),
-      'latitude': this.state.latitude_min.toString(),
-      'coverimagepath': this.state.dbImgStoreArr[0],
-      'imagePath': imagepathAll.toString(),
-    };
+      const imagepathAll = this.state.dbImgStoreArr.join(',');
 
-    axiosInstance.post('storeproperty', pdata)
-      .then(response => {
-        if (response.data === 'saved') {
-          console.log('New Property added successfully');
-        } else {
-          console.warn('Data is not stored');
-        }
-        this.setState({ uploading: false });
-        this.setState({ imgarrayPath: [] });
-        console.log('all Done ⭐⭐⭐⭐');
+      // const phoneNumber = AsyncStorage.getItem('PhoneNumber');
+      const uuid = await AsyncStorage.getItem('UUID');
 
-        navigation.navigate('HomeScreen', {
+      const pdata = {
+        'pid': this.state.pid,
+        'uuid': uuid,
+        'purpose': this.state.purpose,
+        'ptype': this.state.propertyTy,
+        'city': this.state.selectedCity,
+        'location': this.state.selectedLocation,
+        'areasize': this.state.areaSize,
+        'totalprice': this.state.TotalPrice,
+        'possession': 'true',
+        'ptitle': this.state.title,
+        'pdescription': this.state.desciption,
+        'email': this.state.email,
+        'contectone': this.state.countrycodeph1 + this.state.phoneOne,
+        'contecttwo': this.state.countrycodeph2 + this.state.phoneTwo,
+        'logitude': this.state.logitude_min.toString(),
+        'latitude': this.state.latitude_min.toString(),
+        'coverimagepath': this.state.dbImgStoreArr[0],
+        'imagePath': imagepathAll.toString(),
+      };
+
+      axiosInstance.post('storeproperty', pdata)
+        .then(response => {
+          if (response.data === 'saved') {
+            console.log('New Property added successfully');
+          } else {
+            console.warn('Data is not stored');
+          }
+          this.setState({ uploading: false });
+          this.setState({ imgarrayPath: [] });
+          console.log('all Done ⭐⭐⭐⭐');
+
+          navigation.navigate('HomeScreen', {
+          });
+        })
+        .catch(error => {
+          console.error('Error when Data Store:', error);
         });
-      })
-      .catch(error => {
-        console.error('Error when Data Store:', error);
-      });
+    }
+    else {
+      console.log('some are filed are remain');
+    }
   };
 
   render() {
@@ -589,7 +600,7 @@ class AddProperty extends Component {
                   <View style={styles.Togglecontainer}>
                     <View style={styles.infocontainer}>
                       <View style={styles.iconcontainer}>
-                        <Icon style={{}} type={Icons.Feather} name="check-circle" size={26} color={'gray'} />
+                        <Icon style={{}} type={Icons.Feather} name="check-circle" size={20} color={'gray'} />
                       </View>
                       <View>
                         <Text>Purpose</Text>
@@ -670,7 +681,7 @@ class AddProperty extends Component {
                   <View style={styles.largeTogglecontainer}>
                     <View>
                       <View style={styles.infocontainer}>
-                        <View style={styles.iconcontainer}>
+                        <View style={[styles.iconcontainer, (this.state.selectedLocation === '' && this.state.issubmit === true) ? { borderColor: 'red' } : {}]}>
                           <Icon style={{}} type={Icons.Feather} name="map" size={22} color={'gray'} />
                         </View>
                         <TouchableOpacity style={styles.subcontainer} onPress={this.handleAreachange}>
@@ -702,7 +713,7 @@ class AddProperty extends Component {
                 <View>
                   <View style={styles.Togglecontainer}>
                     <View style={styles.infocontainer}>
-                      <View style={styles.iconcontainer}>
+                      <View style={[styles.iconcontainer, (this.state.areaSize === '' && this.state.issubmit === true) ? { borderColor: 'red' } : {}]}>
                         <Icon style={{}} type={Icons.Ionicons} name="resize" size={22} color={'gray'} />
                       </View>
                       <View>
@@ -745,7 +756,7 @@ class AddProperty extends Component {
                 <View>
                   <View style={styles.Togglecontainer}>
                     <View style={styles.infocontainer}>
-                      <View style={styles.iconcontainer}>
+                      <View style={[styles.iconcontainer, (this.state.TotalPrice === '' && this.state.issubmit === true) ? { borderColor: 'red' } : {}]}>
                         <Icon style={{}} type={Icons.Ionicons} name="pricetag-outline" size={22} color={'gray'} />
                       </View>
                       <View>
@@ -774,7 +785,7 @@ class AddProperty extends Component {
                 <View>
                   <View style={styles.Togglecontainer}>
                     <View style={styles.infocontainer}>
-                      <View style={styles.iconcontainer}>
+                      <View style={[styles.iconcontainer, (this.state.title === '' && this.state.issubmit === true) ? { borderColor: 'red' } : {}]}>
                         <Icon style={{}} type={Icons.MaterialCommunityIcons} name="format-title" size={22} color={'gray'} />
                       </View>
                       <View>
@@ -798,7 +809,7 @@ class AddProperty extends Component {
                 <View>
                   <View style={styles.Togglecontainer}>
                     <View style={styles.infocontainer}>
-                      <View style={styles.iconcontainer}>
+                      <View style={[styles.iconcontainer, (this.state.desciption === '' && this.state.issubmit === true) ? { borderColor: 'red' } : {}]}>
                         <Icon style={{}} type={Icons.MaterialIcons} name="subtitles" size={22} color={'gray'} />
                       </View>
                       <View>
@@ -823,7 +834,7 @@ class AddProperty extends Component {
                   <View style={styles.Togglecontainerimg}>
                     <View style={styles.infocontainer}>
                       <View>
-                        <View style={styles.iconcontainer}>
+                        <View style={[styles.iconcontainer, (this.state.imgarrayPath.length === 0 && this.state.issubmit === true) ? { borderColor: 'red' } : {}]}>
                           <Icon style={{}} type={Icons.MaterialIcons} name="search" size={26} color={'gray'} />
                         </View>
                       </View>
@@ -859,7 +870,7 @@ class AddProperty extends Component {
                                 >
                                   <Image source={image} style={{ width: 100, height: 100, margin: 10 }} />
                                   <TouchableOpacity onPress={() => this.handleRemoveImage(index)} style={{ position: 'absolute', top: 0, right: 0, backgroundColor: '#e6eae7', width: 20, height: 20, borderRadius: 11, justifyContent: 'center', alignItems: 'center' }}>
-                                    <Icon style={{}} type={Icons.AntDesign} name="close" size={14} color={'balck'} />
+                                    <Icon style={{}} type={Icons.AntDesign} name="close" size={14} color={'black'} />
                                   </TouchableOpacity>
                                 </TouchableOpacity>
                                 {this.state.uploading &&
@@ -886,7 +897,7 @@ class AddProperty extends Component {
                 <View>
                   <View style={styles.Togglecontainer}>
                     <View style={styles.infocontainer}>
-                      <View style={styles.iconcontainer}>
+                      <View style={[styles.iconcontainer, (this.state.email === '' && this.state.issubmit === true) ? { borderColor: 'red' } : {}]}>
                         <Icon style={{}} type={Icons.MaterialCommunityIcons} name="email-outline" size={22} color={'gray'} />
                       </View>
                       <View>
@@ -910,7 +921,9 @@ class AddProperty extends Component {
                 <View>
                   <View style={styles.Togglecontainer}>
                     <View style={styles.infocontainer}>
-                      <View style={styles.iconcontainer}>
+                      <View style={[styles.iconcontainer, (
+                        (this.state.phoneOne === '' && this.state.phoneTwo === '')
+                        && this.state.issubmit === true) ? { borderColor: 'red' } : {}]}>
                         <Icon style={{}} type={Icons.AntDesign} name="contacts" size={26} color={'gray'} />
                       </View>
                       <View>
@@ -1038,8 +1051,9 @@ class AddProperty extends Component {
               this.setState({ selectedCity: loc });
               await this.getLocation();
               await this.handleAreaLocation();
+            } else {
+              this.setState({ selectedLocation: loc });
             }
-            this.setState({ selectedLocation: loc });
           }}
           setBtData={this.state.btdata}
           type={this.currdttype}
@@ -1209,6 +1223,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 10,
     borderRadius: 20,
+    borderWidth: 1,
   },
   infocontainer: {
     justifyContent: 'flex-start',
@@ -1380,5 +1395,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.1)',
-  }
+  },
 });

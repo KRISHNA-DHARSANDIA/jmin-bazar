@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import { View, Text, Image, Dimensions, StyleSheet, FlatList, SafeAreaView, TouchableOpacity } from 'react-native';
+import { View, Text, Image, Dimensions, StyleSheet, FlatList, SafeAreaView, TouchableOpacity, Modal, Button } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Icon, { Icons } from '../../assets/Icon/Icons';
 
@@ -18,33 +18,33 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
-const DATA = [
-    {
-        pid: 20, // property id
-        ownerid: 15,
-        purpose: 'Rent Out',
-        ptype: 'Commercial Plot',
-        city: 'Rajkot',
-        location: 'Movdi Main Road',
-        arasize: 10,
-        totalprice: 102070,
-        possession: 1,
-        ptitle: 'Evergreen Estates',
-        description: 'Your Key to Extraordinary Properties.',
-        images: [
-            'https://firebasestorage.googleapis.com/v0/b/farmsale-001.appspot.com/o/Images%2Frn_image_picker_lib_temp_0c81f302-f29e-428b-8fec-72020fa8504b1712737210517.jpg?alt=media&token=d182e164-00ba-4a7f-8b2a-688fa57cae75',
-            'https://firebasestorage.googleapis.com/v0/b/farmsale-001.appspot.com/o/Images%2Frn_image_picker_lib_temp_0c81f302-f29e-428b-8fec-72020fa8504b1712737210517.jpg?alt=media&token=d182e164-00ba-4a7f-8b2a-688fa57cae75',
-            'https://firebasestorage.googleapis.com/v0/b/farmsale-001.appspot.com/o/Images%2Frn_image_picker_lib_temp_0c81f302-f29e-428b-8fec-72020fa8504b1712737210517.jpg?alt=media&token=d182e164-00ba-4a7f-8b2a-688fa57cae75',
-        ],
-        coverimgepath: 'https://firebasestorage.googleapis.com/v0/b/farmsale-001.appspot.com/o/Images%2Frn_image_picker_lib_temp_0c81f302-f29e-428b-8fec-72020fa8504b1712737210517.jpg?alt=media&token=d182e164-00ba-4a7f-8b2a-688fa57cae75',
-        email: 'kp064342@gamil.com',
-        contectone: '8490040874',
-        contecttwo: '9824840874',
-        posting_date: '2024-04-10',
-        latitude: 22.312098254389,
-        longitude: 73.1912969984114,
-    },
-];
+// const DATA = [
+//     {
+//         pid: 20, // property id
+//         ownerid: 15,
+//         purpose: 'Rent Out',
+//         ptype: 'Commercial Plot',
+//         city: 'Rajkot',
+//         location: 'Movdi Main Road',
+//         arasize: 10,
+//         totalprice: 102070,
+//         possession: 1,
+//         ptitle: 'Evergreen Estates',
+//         description: 'Your Key to Extraordinary Properties.',
+//         images: [
+//             'https://firebasestorage.googleapis.com/v0/b/farmsale-001.appspot.com/o/Images%2Frn_image_picker_lib_temp_0c81f302-f29e-428b-8fec-72020fa8504b1712737210517.jpg?alt=media&token=d182e164-00ba-4a7f-8b2a-688fa57cae75',
+//             'https://firebasestorage.googleapis.com/v0/b/farmsale-001.appspot.com/o/Images%2Frn_image_picker_lib_temp_0c81f302-f29e-428b-8fec-72020fa8504b1712737210517.jpg?alt=media&token=d182e164-00ba-4a7f-8b2a-688fa57cae75',
+//             'https://firebasestorage.googleapis.com/v0/b/farmsale-001.appspot.com/o/Images%2Frn_image_picker_lib_temp_0c81f302-f29e-428b-8fec-72020fa8504b1712737210517.jpg?alt=media&token=d182e164-00ba-4a7f-8b2a-688fa57cae75',
+//         ],
+//         coverimgepath: 'https://firebasestorage.googleapis.com/v0/b/farmsale-001.appspot.com/o/Images%2Frn_image_picker_lib_temp_0c81f302-f29e-428b-8fec-72020fa8504b1712737210517.jpg?alt=media&token=d182e164-00ba-4a7f-8b2a-688fa57cae75',
+//         email: 'kp064342@gamil.com',
+//         contectone: '8490040874',
+//         contecttwo: '9824840874',
+//         posting_date: '2024-04-10',
+//         latitude: 22.312098254389,
+//         longitude: 73.1912969984114,
+//     },
+// ];
 
 
 
@@ -54,13 +54,30 @@ const Item = ({ propertydt }) => {
     const toast = useToast();
     const navigation = useNavigation();
 
+    const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
+
+
+    const handleDeletePress = () => {
+        setDeleteModalVisible(true);
+    };
+
+    const handleDeleteConfirm = () => {
+        setDeleteModalVisible(false);
+        handledeletebtn();
+    };
+
+    const handleCancelDelete = () => {
+        setDeleteModalVisible(false);
+    };
+
     //Delete btn click
     const handledeletebtn = async () => {
         try {
 
             // Delete data from Firebase
             try {
-                const fileUrl = propertydt.coverimgepath;
+                const fileUrl = propertydt.coverimagepath;
+                console.log(fileUrl);
                 const fileRef = firebase.storage().refFromURL(fileUrl);
 
                 const exist = await fileRef.getMetadata();
@@ -82,14 +99,15 @@ const Item = ({ propertydt }) => {
 
             //delete data from database
             try {
+                const currpid = propertydt.pid.toString();
                 const response = await axiosInstance.post('deleteuserproperty', {
-                    'pid': propertydt.pid
+                    'pid': currpid
                 });
                 if (response.data === 'deleted') {
                     toast.show('Property Deleted Successfully', {
                         type: 'normal',
                         placement: 'bottom',
-                        duration: 2000,
+                        duration: 3000,
                         animationType: 'zoom-in',
                         normalColor: '#637A9F80',
                     });
@@ -138,6 +156,21 @@ const Item = ({ propertydt }) => {
 
     return (
         <View style={styles.mainproperthcard}>
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={isDeleteModalVisible}
+                onRequestClose={handleCancelDelete}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text>Are you sure you want to delete?</Text>
+                        <Button title="Confirm" onPress={handleDeleteConfirm} />
+                        <Button title="Cancel" onPress={handleCancelDelete} />
+                    </View>
+                </View>
+            </Modal>
+
             <View style={styles.imgcontainer}>
                 <Image
                     style={styles.covimge}
@@ -175,7 +208,8 @@ const Item = ({ propertydt }) => {
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity
-                        onPress={handledeletebtn}
+                        //onPress={handledeletebtn}
+                        onPress={handleDeletePress}
                     >
                         <View style={[styles.deletebtncon, styles.commnbutton]}>
                             <Icon
@@ -209,7 +243,6 @@ const MyProperties = (props) => {
                 if (UUID !== null) {
                     const respose = await axiosInstance.get(`getUserProperty?uuid=${UUID}`);
                     setusallproperty(respose.data);
-                    console.log(respose.data);
                 }
                 else {
                     if (usallproperty === null) {
@@ -279,6 +312,18 @@ const MyProperties = (props) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContent: {
+        backgroundColor: 'white',
+        padding: 20,
+        borderRadius: 10,
+        alignItems: 'center',
     },
     folderimg: {
         width: 150,
