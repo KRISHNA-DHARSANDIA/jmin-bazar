@@ -12,6 +12,7 @@ import config from './tamagui.config';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { ToastProvider } from 'react-native-toast-notifications';
 import SplashScreen from 'react-native-splash-screen';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 
 const App = () => {
@@ -25,9 +26,11 @@ const App = () => {
       <GestureHandlerRootView style={{ flex: 1 }}>
         <BottomSheetModalProvider>
           <TamaguiProvider config={config}>
-            <NavigationContainer>
-              <AppNavigator />
-            </NavigationContainer>
+            <SafeAreaProvider>
+              <NavigationContainer>
+                <AppNavigator />
+              </NavigationContainer>
+            </SafeAreaProvider>
           </TamaguiProvider>
         </BottomSheetModalProvider>
       </GestureHandlerRootView>

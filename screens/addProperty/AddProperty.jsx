@@ -21,6 +21,8 @@ import SelectDropdown from 'react-native-select-dropdown';
 import { Camera, Option, Image as img } from '@tamagui/lucide-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { styled } from 'tamagui';
+
 //get current with of device
 const { width } = Dimensions.get('window');
 
@@ -34,15 +36,16 @@ import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import ImageView from 'react-native-image-viewing';
 
 //Firebase
-import { utils } from '@react-native-firebase/app';
-import storage, { firebase } from '@react-native-firebase/storage';
+import { firebase } from '@react-native-firebase/storage';
 
+//Custom ToogleGropItem
+import { MyToggleGroupItem } from '../../components/customComponent/CustomComponent';
 
 //APi
 import axiosInstance from '../../axiosInstance';
+
 //for log and let
 import axios from 'axios';
-import { prepareUIRegistry } from 'react-native-reanimated/lib/typescript/reanimated2/frameCallback/FrameCallbackRegistryUI';
 
 
 const HEADER_MAX_HEIGHT = 200;
@@ -51,6 +54,22 @@ const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
 const countries = ['Sq.Ft.', 'Sq.Meter', 'Acres', 'Hectares'];
 const countrycode = ['+91', '+92'];
+
+// const MyToggleGroupItem = styled(ToggleGroup.Item,
+//   {
+//     backgroundColor: 'rgb(245, 245, 245)',
+//     paddingVertical: 14,
+//     paddingHorizontal: 22,
+//     variants: {
+//       active: {
+//         true: {
+//           backgroundColor: 'rgb(231, 243, 239)',
+//           borderColor: 'rgb(23, 162, 96)',
+//           borderWidth: 1.7,
+//         },
+//       },
+//     },
+//   });
 
 class AddProperty extends Component {
 
@@ -186,6 +205,7 @@ class AddProperty extends Component {
 
   handlePurposeChnage = (value) => {
     this.setState({ purpose: value });
+    console.log(value);
   };
 
   handlepropertyTychange = (value) => {
@@ -371,7 +391,6 @@ class AddProperty extends Component {
       }
     });
   };
-
 
 
   imageUpload = async () => {
@@ -609,13 +628,25 @@ class AddProperty extends Component {
                     <View>
                       <ToggleGroup
                         type="single"
-                        value={this.state.purpose}
+                        // value={this.state.purpose}
                         onValueChange={this.handlePurposeChnage}
                         style={styles.ToggleGroup}
+                        disableDeactivation={true}
                       >
                         <YStack flexDirection="row" alignItems="center" space="$3">
-                          <ToggleGroup.Item active={true} style={{}} value="Sell"><Text>Sell</Text></ToggleGroup.Item>
-                          <ToggleGroup.Item style={{}} value="Rent Out"><Text>Rent Out</Text></ToggleGroup.Item>
+                          <MyToggleGroupItem
+                            active={this.state.purpose === 'Sell' ? true : false} style={{}} value="Sell">
+                            <Text
+                              style={this.state.purpose === 'Sell' ? { color: 'rgb(23, 162, 96)' } : { color: 'rgb(34, 34, 34)' }}
+                            >Sell</Text>
+                          </MyToggleGroupItem>
+                          <MyToggleGroupItem
+                            active={this.state.purpose === 'Rent Out' ? true : false}
+                            style={{}} value="Rent Out">
+                            <Text
+                              style={this.state.purpose === 'Rent Out' ? { color: 'rgb(23, 162, 96)' } : { color: 'rgb(34, 34, 34)' }}
+                            >Rent Out</Text>
+                          </MyToggleGroupItem>
                         </YStack>
                       </ToggleGroup>
                     </View>
@@ -638,15 +669,34 @@ class AddProperty extends Component {
                         style={styles.ToggleGroup}
                         value={this.state.propertyTy}
                         onValueChange={this.handlepropertyTychange}
+                        disableDeactivation={true}
                       >
                         <YStack flexDirection="column" space="$3">
                           <YStack flexDirection="row" alignItems="center" space="$3">
-                            <ToggleGroup.Item value="Residential Plot"><Text>Residential Plot</Text></ToggleGroup.Item>
-                            <ToggleGroup.Item value="Commercial Plot"><Text>Commercial Plot</Text></ToggleGroup.Item>
+                            <MyToggleGroupItem
+                              value="Residential Plot"
+                              active={this.state.propertyTy === 'Residential Plot' ? true : false}
+                            >
+                              <Text
+                                style={this.state.propertyTy === 'Residential Plot' ? { color: 'rgb(23, 162, 96)' } : { color: 'rgb(34, 34, 34)' }}>Residential Plot</Text></MyToggleGroupItem>
+                            <MyToggleGroupItem
+                              value="Commercial Plot"
+                              active={this.state.propertyTy === 'Commercial Plot' ? true : false}
+                            >
+                              <Text
+                                style={this.state.propertyTy === 'Commercial Plot' ? { color: 'rgb(23, 162, 96)' } : { color: 'rgb(34, 34, 34)' }}>Commercial Plot</Text></MyToggleGroupItem>
                           </YStack>
                           <YStack flexDirection="row" alignItems="center" space="$3">
-                            <ToggleGroup.Item value="Agriculture Land"><Text>Agriculture Land</Text></ToggleGroup.Item>
-                            <ToggleGroup.Item value="Industrial Land"><Text>Industrial Land</Text></ToggleGroup.Item>
+                            <MyToggleGroupItem value="Agriculture Land"
+                              active={this.state.propertyTy === 'Agriculture Land' ? true : false}
+                            >
+                              <Text
+                                style={this.state.propertyTy === 'Agriculture Land' ? { color: 'rgb(23, 162, 96)' } : { color: 'rgb(34, 34, 34)' }}>Agriculture Land</Text></MyToggleGroupItem>
+                            <MyToggleGroupItem
+                              value="Industrial Land"
+                              active={this.state.propertyTy === 'Industrial Land' ? true : false}
+                            ><Text
+                              style={this.state.propertyTy === 'Industrial Land' ? { color: 'rgb(23, 162, 96)' } : { color: 'rgb(34, 34, 34)' }}>Industrial Land</Text></MyToggleGroupItem>
                           </YStack>
                         </YStack>
                       </ToggleGroup>
@@ -1224,6 +1274,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
     borderRadius: 20,
     borderWidth: 1,
+    borderColor: 'transparent'
   },
   infocontainer: {
     justifyContent: 'flex-start',
@@ -1234,6 +1285,7 @@ const styles = StyleSheet.create({
   ToggleGroup: {
     marginLeft: 45,
     backgroundColor: '#ffffff',
+    borderRadius: 42,
   },
   subcontainer: {
     flexDirection: 'row',

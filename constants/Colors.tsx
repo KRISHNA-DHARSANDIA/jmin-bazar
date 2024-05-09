@@ -1,8 +1,8 @@
 /* eslint-disable prettier/prettier */
 export default {
-  primary: '#637aff',
+  primary: '#02b55e',
   primaryDark: '#2759ff',
-  primaryLite: '#637aff99',
+  primaryLite: '#FFFFFFAA',
   primaryMoreTransLite :'rgba(99, 122, 255,0.2)',
   black: '#000',
   white: 'white',

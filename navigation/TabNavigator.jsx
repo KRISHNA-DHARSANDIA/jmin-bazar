@@ -15,9 +15,8 @@ import { TabActions } from '@react-navigation/native';
 //screen
 import HomeScreen from '../screens/homeScreen/HomeScreen';
 import UserInfo from '../screens/userInfo/UserInfo';
-import Views from '../screens/Views';
 import UserLike from '../screens/UserLike';
-import Tab1Screen from '../screens/ScrollViewScreen';
+import Tab1Screen from '../screens/Tab2Screen';
 
 
 const Tab = createBottomTabNavigator();
@@ -85,9 +84,9 @@ const TabButton = (props) => {
             style={[styles.container]}>
             <Animatable.View
                 ref={viewRef}
-                duration={1000}>
+                duration={300}>
                 <View style={[styles.btn, { width: 64 }]}>
-                    <View style={{ backgroundColor: selected ? item.alphaClr : null, width: 6, height: 6, borderRadius: 3, marginBottom: 5 }} />
+                    {/* <View style={{ backgroundColor: selected ? item.alphaClr : null, width: 6, height: 6, borderRadius: 3, marginBottom: 10 }} /> */}
                     <Icon size={23} type={item.type} name={selected ? item.activeIcon : item.inActiveIcon} color={selected ? Colors.primary : Colors.primaryLite} />
                     {/* <Text style={[styles.labeltxt, selected && styles.selectedLabel]}>{item.label}</Text> */}
                 </View>
@@ -98,7 +97,7 @@ const TabButton = (props) => {
 
 export default function TabNavigator({ route }) {
 
-    const navigation = useNavigation();
+    //const navigation = useNavigation();
 
     // let { initialTab } = route.params;
 
@@ -108,9 +107,9 @@ export default function TabNavigator({ route }) {
 
     const TabArr = [
         { route: 'HomeScreen', label: 'Home', type: Icons.Ionicons, activeIcon: 'home', inActiveIcon: 'home-outline', component: HomeScreen, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite },
-        { route: 'Views', label: 'Property', type: Icons.MaterialCommunityIcons, activeIcon: 'island', inActiveIcon: 'island', component: Views, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite },
+        // { route: 'Views', label: 'Property', type: Icons.MaterialCommunityIcons, activeIcon: 'island', inActiveIcon: 'island', component: Views, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite },
         {
-            route: 'Search', label: 'Activity', type: Icons.Feather, activeIcon: 'plus',
+            route: 'Search', label: 'Activity', type: Icons.Feather, activeIcon: 'search',
             inActiveIcon: 'search', component: Tab1Screen, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite,
         },
         { route: 'UserLike', label: 'Like', type: Icons.MaterialCommunityIcons, activeIcon: 'heart-plus', inActiveIcon: 'heart-plus-outline', component: UserLike, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite },
@@ -119,19 +118,20 @@ export default function TabNavigator({ route }) {
 
     return (
         <Tab.Navigator
-            shifting={false}
+            shifting={true}
             initialRouteName={'HomeScreen'}
             screenOptions={{
                 headerShown: false,
                 tabBarStyle: {
-                    height: 66,
+                    height: 70,
                     position: 'absolute',
-                    bottom: 0,
-                    right: 0,
-                    left: 0,
-                    borderTopLeftRadius: 20,
-                    borderTopRightRadius: 20,
+                    bottom: 30,
+                    right: 20,
+                    left: 20,
+                    borderRadius: 20,
+                    backgroundColor: 'rgba(246,247,252,1)',
                 },
+                animationEnabled: true,
             }}
         >
             {TabArr.map((item, index) => (
@@ -141,21 +141,22 @@ export default function TabNavigator({ route }) {
                     component={item.component}
                     options={{
                         tabBarShowLabel: false,
-                        tabBarIcon: ({ focused }) => (
-                            <Icon size={28} type={item.type} name={focused ? item.activeIcon : item.inActiveIcon}
-                                style={{
-                                    color: 'white',
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                }}
-                            />
-                        ),
+                        // tabBarIcon: ({ focused }) => (
+                        //     <Icon size={28} type={item.type} name={focused ? item.activeIcon : item.inActiveIcon}
+                        //         style={{
+                        //             color: 'red',
+                        //             justifyContent: 'center',
+                        //             alignItems: 'center',
+                        //         }}
+                        //     />
+                        // ),
                         tabBarButton: (props) => (
-                            item.route === 'Search' ? (
-                                <CustomTabBarButton {...props} />
-                            ) : (
-                                <TabButton {...props} item={item} />
-                            )
+                            // item.route === 'Search' ? (
+                            //     <CustomTabBarButton {...props} />
+                            // ) : (
+                            //     <TabButton {...props} item={item} />
+                            // )
+                            (<TabButton {...props} item={item} />)
                         ),
                     }}
                 />
@@ -167,7 +168,7 @@ export default function TabNavigator({ route }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'flex-start',
+        justifyContent: 'center',
         alignItems: 'center',
         position: 'relative',
     },
@@ -178,9 +179,9 @@ const styles = StyleSheet.create({
     btn: {
         flexDirection: 'column',
         alignItems: 'center',
-        paddingHorizontal: 14,
-        paddingVertical: 14,
-        borderBottomLeftRadius: 22,
-        borderBottomRightRadius: 22,
+        // paddingHorizontal: 14,
+        // paddingVertical: 14,
+        // borderBottomLeftRadius: 22,
+        // borderBottomRightRadius: 22,
     },
 });

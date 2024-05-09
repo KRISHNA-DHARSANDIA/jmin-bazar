@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { SafeAreaView, Dimensions, StyleSheet, Text, RefreshControl, TouchableOpacity } from 'react-native';
 import { View, ScrollView, YStack, Image, Card, CardProps } from 'tamagui';
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import CustomHeader from '../components/customHeader/CustomHeader';
 
@@ -17,20 +17,51 @@ import Colors from '../constants/Colors';
 import { Styles } from '../Styles/GetTamaguiStyles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+//bottom Sheet
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import CustomeBottomSheet from '../components/BottomSheet/BottomSheetModel';
+
+
 const UserLike = () => {
 
   const [propertyDataList, setPropertyDataList] = useState([]);
   const [refreshing, setRefreshing] = React.useState(false);
+  const [isLogin, setisLogin] = useState<boolean>(false);
+
+  const bottomSheetRef = useRef<BottomSheetModal>(null);
 
   useFocusEffect(
     React.useCallback(() => {
       // Use setTimeout if needed, but wrap the fetchData call inside the useCallback
-      const fetchDataWithTimeout = async () => {
-        await new Promise(resolve => setTimeout(resolve, 1000)); // 1 second
-        fetchData();
+
+      const logincheck = async () => {
+        const AysIsLogin = await AsyncStorage.getItem('LoginCheck');
+        if (AysIsLogin !== null) {
+          const result = JSON.parse(AysIsLogin);
+          if (result === true) { setisLogin(true); }
+        }
+        else {
+          setisLogin(false);
+          setPropertyDataList([]); // Empty The Old data after logout
+          bottomSheetRef.current?.present();
+        }
       };
-      fetchDataWithTimeout();
-    }, [])
+
+      //make Promise check login or not 
+      logincheck().then(() => {
+        if (isLogin === true) {
+          const fetchDataWithTimeout = async () => {
+            await new Promise(resolve => setTimeout(resolve, 1000)); // 1 second
+            fetchData();
+          };
+          fetchDataWithTimeout();
+        }
+        else {
+          console.log('currly use is not login ');
+        }
+      });
+
+    }, [isLogin])
   );
 
   const fetchData = async () => {
@@ -56,12 +87,16 @@ const UserLike = () => {
   }
 
   useMemo(() => {
-    fetchData();
-  }, []);
+    if (isLogin) {
+      fetchData();
+    }
+  }, [isLogin]);
 
   const onRefresh = () => {
-    setRefreshing(true);
-    fetchData();
+    if (isLogin) {
+      setRefreshing(true);
+      fetchData();
+    }
   };
 
   const favoritePressComplete = () => {
@@ -89,6 +124,7 @@ const UserLike = () => {
           ))}
         </YStack>
       </ScrollView>
+      <CustomeBottomSheet ref={bottomSheetRef} />
     </SafeAreaView>
   )
 }

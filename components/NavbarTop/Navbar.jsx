@@ -21,6 +21,10 @@ const Navbar = () => {
     //     navigation.navigate(AddProperty);
     // }
 
+    const handlePostProperty = () => {
+        navigation.navigate('AddProperty');
+    }
+
     const openDrawer = () => {
         navigation.openDrawer();
     };
@@ -40,7 +44,7 @@ const Navbar = () => {
                 <View style={[styles.navright]}>
                     <View style={[styles.rightcontent]}>
                         <View>
-                            <TouchableOpacity>
+                            <TouchableOpacity onPress={handlePostProperty}>
                                 <View style={[styles.postbtn]}>
                                     <Text style={[styles.postbtntxt]}>Post property</Text>
                                 </View>
@@ -56,7 +60,7 @@ const Navbar = () => {
                     </View>
                 </View>
             </View>
-        </SafeAreaView>
+        </SafeAreaView >
     );
 }
 
@@ -67,7 +71,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         top: 0,
-        marginVertical: 14,
+        marginTop: 14,
+        marginBottom: 6,
     },
     navleft: {
 

@@ -71,30 +71,30 @@ const UserInfo: React.FC<UserInfoProps> = ({ route }) => {
           //store Data in Mobile storage
           if (response.data !== 'Error') {
             AsyncStorage.setItem('PhoneNumber', ('+91' + phonenumber));
-            AsyncStorage.setItem('LoginCheck', String(LoginCheck));
-            AsyncStorage.setItem('UUID',response.data.uuid);
+            AsyncStorage.setItem('LoginCheck', JSON.stringify(LoginCheck));
+            AsyncStorage.setItem('UUID', response.data.uuid);
             console.log(response.data);
 
             getData();
             //Give User Login confirm
             return (
-              toast.show('Login successfully',{
+              toast.show('Login successfully', {
                 type: 'normal',
                 placement: 'bottom',
                 duration: 2000,
                 animationType: 'zoom-in',
-                normalColor:'#637A9F80',
+                normalColor: '#637A9F80',
               })
             );
           }
           else {
             return (
-              toast.show('Something going Wrong :D',{
+              toast.show('Something going Wrong :D', {
                 type: 'normal',
                 placement: 'bottom',
                 duration: 2000,
                 animationType: 'zoom-in',
-                normalColor:'#637A9F80',
+                normalColor: '#637A9F80',
               })
             );
           }
@@ -116,7 +116,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ route }) => {
     //Call the function when Screen on Changes are Made in Screen
     getData();
 
-  }, [credential, isLoggedIn, dismissAll, phoneNumber,toast]);
+  }, [credential, isLoggedIn, dismissAll, phoneNumber, toast]);
 
   //set the User Info in Local Storage
 
@@ -159,23 +159,23 @@ const UserInfo: React.FC<UserInfoProps> = ({ route }) => {
 
           //Give User logout confirm
           return (
-            toast.show('Logout SuccesssFully 🥲',{
+            toast.show('Logout SuccesssFully 🥲', {
               type: 'normal',
               placement: 'bottom',
               duration: 2000,
               animationType: 'zoom-in',
-              normalColor:'#637A9F90',
+              normalColor: '#637A9F90',
             })
           );
         }
         else {
           return (
-            toast.show('Something Going wrong 🦖',{
+            toast.show('Something Going wrong 🦖', {
               type: 'normal',
               placement: 'bottom',
               duration: 2000,
               animationType: 'zoom-in',
-              normalColor:'#637A9F90',
+              normalColor: '#637A9F90',
             })
           );
         }
