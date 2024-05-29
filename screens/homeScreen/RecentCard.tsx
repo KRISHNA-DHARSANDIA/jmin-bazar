@@ -18,8 +18,8 @@ const RecentCard = (props: CardProps & { onFavoritePressComplete: any, navigatio
     const favoritePress = async () => {
         try {
             const response = await axiosInstance.post('storeuserfavorite', {
-                'pid': pid,
-                'userid': userid
+                'pid': pid.toString(),
+                'userid': userid.toString()
             });
             if (response) {
                 onFavoritePressComplete();

@@ -117,19 +117,19 @@ const HomeScreen = (props: any) => {
               <ScrollView horizontal showsHorizontalScrollIndicator={false} >
                 <XStack space="$2" justifyContent="space-between">
                   <Button alignSelf="center" icon={Airplay} size="$4">
-                    Large
+                    Buy
                   </Button>
                   <Button alignSelf="center" icon={Crosshair} size="$4">
-                    Large
+                    Rent
                   </Button>
                   <Button alignSelf="center" icon={AirVent} size="$4">
-                    Large
+                    Plot / Land
                   </Button>
                   <Button alignSelf="center" icon={Brain} size="$4">
-                    Large
+                    Co-working Spaces
                   </Button>
-                  <Button alignSelf="center" icon={CloudSunRain} size="$3">
-                    Large
+                  <Button alignSelf="center" icon={CloudSunRain} size="$4">
+                    Buy Commercial
                   </Button>
                 </XStack>
               </ScrollView>

@@ -146,18 +146,43 @@ export default function ResourcePage({ route, navigation }) {
       </View>
       <View style={[styles.bottombar]}>
         <View flexDirection='row' justifyContent='space-between'>
-          <Button size="$3" width={'auto'} height={45} fontSize={16} backgroundColor={'#00aa54'} color={'white'} onPress={this.StoreData}>
-            Call
-          </Button>
-          <Button size="$3" width={'auto'} height={45} fontSize={16} backgroundColor={'#00aa54'} color={'white'} onPress={this.StoreData}>
-            Call
-          </Button>
-          <Button size="$3" width={140} height={45} fontSize={16} backgroundColor={'#00aa54'} color={'white'} onPress={this.StoreData}>
-            Call
-          </Button>
-          <Button size="$3" width={'auto'} height={45} fontSize={16} backgroundColor={'#00aa54'} color={'white'} onPress={this.StoreData}>
-            Call
-          </Button>
+          <TouchableOpacity style={styles.bottombtn} onPress={this.StoreData}>
+            <Icon
+              size={28}
+              type={Icons.MaterialCommunityIcons}
+              name={'message-processing'}
+              style={styles.backbtn}
+              color="rgb(147, 214, 173)"
+            />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.bottombtn} onPress={this.StoreData}>
+            <Icon
+              size={28}
+              type={Icons.MaterialIcons}
+              name={'email'}
+              style={styles.backbtn}
+              color="rgb(147, 214, 173)"
+            />
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.bottombtn, { width: 120,flexDirection:'row',backgroundColor:'#00aa54' }]} onPress={this.StoreData}>
+            <Icon
+              size={20}
+              type={Icons.Ionicons}
+              name={'call'}
+              style={styles.backbtn}
+              color="white"
+            />
+            <Text style={{marginLeft:6,fontWeight:'700',fontSize:16,color:'white'}} >Call</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.bottombtn} onPress={this.StoreData}>
+            <Icon
+              size={28}
+              type={Icons.FontAwesome}
+              name={'whatsapp'}
+              style={styles.backbtn}
+              color="rgb(147, 214, 173)"
+            />
+          </TouchableOpacity>
         </View>
       </View>
     </View>
@@ -213,5 +238,13 @@ const styles = StyleSheet.create({
     padding: 10,
     bottom: 0,
     width: width,
-  }
+  },
+  bottombtn: {
+    backgroundColor: 'rgba(31,39,36,255)',
+    width: 70,
+    height: 45,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
