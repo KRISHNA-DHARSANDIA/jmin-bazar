@@ -1,5 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable prettier/prettier */
+import { useRef } from 'react';
 import { StyleSheet, Dimensions, Text, TouchableOpacity, RefreshControl } from 'react-native';
 import React, { useState, useMemo, useEffect } from 'react';
 import { Crosshair, Airplay, AirVent, Brain, CloudSunRain } from '@tamagui/lucide-icons';
@@ -26,6 +27,10 @@ import SearchUserData from '../searchUserData/SearchUserData';
 //RecentAdd Card
 import RecentCard from './RecentCard';
 
+//bottom Sheet
+import { BottomSheetModal, useBottomSheetModal } from '@gorhom/bottom-sheet';
+import CustomeBottomSheet from '../../components/BottomSheet/BottomSheetModel';
+
 const { width } = Dimensions.get('window');
 
 const HomeScreen = (props: any) => {
@@ -35,6 +40,10 @@ const HomeScreen = (props: any) => {
   const { navigation } = props;
 
   const [isLogin, setisLogin] = useState<boolean>(false);
+
+  const { dismissAll, dismiss } = useBottomSheetModal();
+
+  const bottomSheetRef = useRef<BottomSheetModal>(null);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -102,6 +111,20 @@ const HomeScreen = (props: any) => {
     fetchData();
   };
 
+  const handelBuybtn = () => {
+    console.log('buy button is clicked');
+    bottomSheetRef.current?.present();
+  }
+
+  const handleType = (type: string) => {
+    switch (type) {
+      case 'buy':
+        handelBuybtn();
+        break;
+    }
+  }
+
+
   return (
     <View style={{ flex: 1, backgroundColor: 'rgba(255,255,255,255)', marginHorizontal: 1 }}>
       <ScrollView contentContainerStyle={styles.scrollView}
@@ -116,19 +139,19 @@ const HomeScreen = (props: any) => {
             <YStack paddingVertical="$3" paddingHorizontal="$2" space="$3" {...props}>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} >
                 <XStack space="$2" justifyContent="space-between">
-                  <Button alignSelf="center" icon={Airplay} size="$4">
+                  <Button onPress={() => handleType('buy')} alignSelf="center" icon={Airplay} size="$4">
                     Buy
                   </Button>
-                  <Button alignSelf="center" icon={Crosshair} size="$4">
+                  <Button onPress={() => handleType('Rent')} alignSelf="center" icon={Crosshair} size="$4">
                     Rent
                   </Button>
-                  <Button alignSelf="center" icon={AirVent} size="$4">
+                  <Button onPress={() => handleType('Plot / Land')} alignSelf="center" icon={AirVent} size="$4">
                     Plot / Land
                   </Button>
-                  <Button alignSelf="center" icon={Brain} size="$4">
+                  <Button onPress={() => handleType('Co-working Spaces')} alignSelf="center" icon={Brain} size="$4">
                     Co-working Spaces
                   </Button>
-                  <Button alignSelf="center" icon={CloudSunRain} size="$4">
+                  <Button onPress={() => handleType('Buy Commercial')} alignSelf="center" icon={CloudSunRain} size="$4">
                     Buy Commercial
                   </Button>
                 </XStack>
@@ -187,6 +210,9 @@ const HomeScreen = (props: any) => {
           </View>
         </View>
       </ScrollView>
+      <View>
+        <CustomeBottomSheet ref={bottomSheetRef} />
+      </View>
     </View>
   );
 };

@@ -36,7 +36,7 @@ export const Icons = {
 //     style: Styles;
 // }
 
-const Icon = ({ type, name, color = '#00000000', size = 24, style}) => {
+const Icon = ({ type, name, color = '#00000000', size = 24, style = {} }) => {
     const fontSize = 24;
     const Tag = type;
     return (

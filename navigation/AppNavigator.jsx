@@ -21,7 +21,7 @@ const AppNavigator = () => {
             <Stack.Screen name="FirstLoad" component={FirstLoad} options={{ headerShown: false }} />
             {/* <Stack.Screen name="TabNavigator" component={TabNavigator} options={{ headerShown: false }} /> */}
             <Stack.Screen name="DrawerScreen" component={DrawerNavigator} options={{ headerShown: false }} />
-            <Stack.Screen name="SearchUserData" component={SearchUserData} options={{ headerTitle: null }} />
+            <Stack.Screen name="SearchUserData" component={SearchUserData} options={{ headerShown: true, headerTitle: 'Filters' }} />
             <Stack.Screen name="AddProperty" options={{ headerShown: false }}>
                 {props => <AddProperty {...props} scrollY={scrollY} />}
             </Stack.Screen>

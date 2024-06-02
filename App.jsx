@@ -14,7 +14,6 @@ import { ToastProvider } from 'react-native-toast-notifications';
 import SplashScreen from 'react-native-splash-screen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-
 const App = () => {
 
   useEffect(() => {

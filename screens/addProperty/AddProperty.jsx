@@ -626,7 +626,7 @@ class AddProperty extends Component {
                       </View>
                     </View>
                     <View>
-                      <ToggleGroup
+                      <ToggleGroup 
                         type="single"
                         // value={this.state.purpose}
                         onValueChange={this.handlePurposeChnage}
