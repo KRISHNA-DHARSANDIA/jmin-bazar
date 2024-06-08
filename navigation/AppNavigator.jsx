@@ -19,7 +19,7 @@ const AppNavigator = () => {
     return (
         <Stack.Navigator initialRouteName="FirstLoad">
             <Stack.Screen name="FirstLoad" component={FirstLoad} options={{ headerShown: false }} />
-            {/* <Stack.Screen name="TabNavigator" component={TabNavigator} options={{ headerShown: false }} /> */}
+            <Stack.Screen name="TabNavigator" component={TabNavigator} options={{ headerShown: false }} />
             <Stack.Screen name="DrawerScreen" component={DrawerNavigator} options={{ headerShown: false }} />
             <Stack.Screen name="SearchUserData" component={SearchUserData} options={{ headerShown: true, headerTitle: 'Filters' }} />
             <Stack.Screen name="AddProperty" options={{ headerShown: false }}>

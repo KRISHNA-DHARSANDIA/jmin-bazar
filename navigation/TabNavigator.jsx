@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable prettier/prettier */
-import React, { useEffect, useRef, useLayoutEffect } from 'react';
+import React, { useEffect, useRef, useLayoutEffect, useContext } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Icon, { Icons } from '../assets/Icon/Icons';
@@ -12,17 +12,28 @@ import { DrawerActions } from '@react-navigation/native';
 
 import { TabActions } from '@react-navigation/native';
 
+import { navigation } from 'react-native';
+
 //screen
 import HomeScreen from '../screens/homeScreen/HomeScreen';
 import UserInfo from '../screens/userInfo/UserInfo';
 import UserLike from '../screens/UserLike';
 import Tab1Screen from '../screens/Tab2Screen';
+import SearchUserData from '../screens/searchUserData/SearchUserData';
+import DrawerNavigator from './DrawerNavigator';
+
+
+import NavigationContext from './NavigationContext';
 
 
 const Tab = createBottomTabNavigator();
 
-const CustomTabBarButton = ({ children, onPress }) => (
-    <TouchableOpacity
+const CustomTabBarButton = (props) => {
+
+    const { item, accessibilityState, onPress, navigation } = props;
+    const { selected } = accessibilityState;
+
+    return (<TouchableOpacity
         style={{
             top: -30,
             justifyContent: 'center',
@@ -33,7 +44,7 @@ const CustomTabBarButton = ({ children, onPress }) => (
             height: 70,
             ...styles.shadow,
         }}
-        onPress={onPress}
+        onPress={() => navigation.navigate(SearchUserData)}
     >
         <View style={{
             width: 60,
@@ -43,20 +54,18 @@ const CustomTabBarButton = ({ children, onPress }) => (
             justifyContent: 'center',
             alignItems: 'center',
         }}>
-            {children}
+            <>
+                <Icon size={26} type={item.type} name={selected ? item.activeIcon : item.inActiveIcon} color={'white'} />
+            </>
         </View>
-    </TouchableOpacity>
-);
+    </TouchableOpacity>);
+};
 
 const TabButton = (props) => {
-
-    const navigation = useNavigation();
 
     const { item, onPress, accessibilityState } = props;
     const { selected } = accessibilityState;
     const viewRef = useRef(null);
-
-    const routeName = item.route;
 
     // useEffect(() => {
     //     if (selected) {
@@ -97,20 +106,21 @@ const TabButton = (props) => {
 
 export default function TabNavigator({ route }) {
 
-    //const navigation = useNavigation();
+    const navigation = useNavigation();
 
-    // let { initialTab } = route.params;
+    const { currentScreen, setCurrentScreen } = useContext(NavigationContext);
+    const initialRoute = route?.params?.screen || 'Home';
 
-    // if (initialTab === undefined) {
-    //     initialTab = 'HomeScreen';
-    // }
+    useEffect(() => {
+        navigation.navigate(currentScreen);
+    }, [currentScreen]);
 
     const TabArr = [
-        { route: 'HomeScreen', label: 'Home', type: Icons.Ionicons, activeIcon: 'home', inActiveIcon: 'home-outline', component: HomeScreen, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite },
-        // { route: 'Views', label: 'Property', type: Icons.MaterialCommunityIcons, activeIcon: 'island', inActiveIcon: 'island', component: Views, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite },
+        { route: 'Home', label: 'Home', type: Icons.Ionicons, activeIcon: 'home', inActiveIcon: 'home-outline', component: HomeScreen, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite },
+        { route: 'Views', label: 'Property', type: Icons.MaterialCommunityIcons, activeIcon: 'island', inActiveIcon: 'island', component: Tab1Screen, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite },
         {
             route: 'Search', label: 'Activity', type: Icons.Feather, activeIcon: 'search',
-            inActiveIcon: 'search', component: Tab1Screen, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite,
+            inActiveIcon: 'search', component: SearchUserData, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite,
         },
         { route: 'UserLike', label: 'Like', type: Icons.MaterialCommunityIcons, activeIcon: 'heart-plus', inActiveIcon: 'heart-plus-outline', component: UserLike, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite },
         { route: 'UserInfo', label: 'Profile', type: Icons.FontAwesome, activeIcon: 'user-circle', inActiveIcon: 'user-circle-o', component: UserInfo, color: Colors.primaryMoreTransLite, alphaClr: Colors.primaryMoreTransLite },
@@ -119,16 +129,21 @@ export default function TabNavigator({ route }) {
     return (
         <Tab.Navigator
             shifting={true}
-            initialRouteName={'HomeScreen'}
+            initialRouteName={initialRoute}
+            screenListeners={({ route }) => ({
+                tabPress: () => setCurrentScreen(route.name),
+            })}
             screenOptions={{
                 headerShown: false,
                 tabBarStyle: {
-                    height: 70,
+                    height: 64,
                     position: 'absolute',
-                    bottom: 30,
-                    right: 20,
-                    left: 20,
-                    borderRadius: 20,
+                    // bottom: 30,
+                    // right: 20,
+                    // left: 20,
+                    // borderRadius: 20,
+                    borderTopRightRadius: 20,
+                    borderTopLeftRadius: 20,
                     backgroundColor: 'rgba(246,247,252,1)',
                 },
                 animationEnabled: true,
@@ -141,22 +156,21 @@ export default function TabNavigator({ route }) {
                     component={item.component}
                     options={{
                         tabBarShowLabel: false,
-                        // tabBarIcon: ({ focused }) => (
-                        //     <Icon size={28} type={item.type} name={focused ? item.activeIcon : item.inActiveIcon}
-                        //         style={{
-                        //             color: 'red',
-                        //             justifyContent: 'center',
-                        //             alignItems: 'center',
-                        //         }}
-                        //     />
-                        // ),
+                        tabBarIcon: ({ focused }) => (
+                            <Icon size={28} type={item.type} name={focused ? item.activeIcon : item.inActiveIcon}
+                                style={{
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                }}
+                            />
+                        ),
                         tabBarButton: (props) => (
-                            // item.route === 'Search' ? (
-                            //     <CustomTabBarButton {...props} />
-                            // ) : (
-                            //     <TabButton {...props} item={item} />
-                            // )
-                            (<TabButton {...props} item={item} />)
+                            item.route === 'Search' ? (
+                                <CustomTabBarButton {...props} navigation={navigation} item={item} />
+                            ) : (
+                                <TabButton {...props} item={item} />
+                            )
+                            // (<TabButton {...props} item={item} />)
                         ),
                     }}
                 />

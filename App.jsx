@@ -1,10 +1,8 @@
 /* eslint-disable prettier/prettier */
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
 // Navigation
 import { NavigationContainer } from '@react-navigation/native';
 import AppNavigator from './navigation/AppNavigator';
-import DrawerNavigator from './navigation/DrawerNavigator';
 
 import { TamaguiProvider } from 'tamagui';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -13,6 +11,8 @@ import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { ToastProvider } from 'react-native-toast-notifications';
 import SplashScreen from 'react-native-splash-screen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+import { NavigationProvider } from './navigation/NavigationContext';
 
 const App = () => {
 
@@ -26,9 +26,11 @@ const App = () => {
         <BottomSheetModalProvider>
           <TamaguiProvider config={config}>
             <SafeAreaProvider>
-              <NavigationContainer>
-                <AppNavigator />
-              </NavigationContainer>
+              <NavigationProvider>
+                <NavigationContainer>
+                  <AppNavigator />
+                </NavigationContainer>
+              </NavigationProvider>
             </SafeAreaProvider>
           </TamaguiProvider>
         </BottomSheetModalProvider>

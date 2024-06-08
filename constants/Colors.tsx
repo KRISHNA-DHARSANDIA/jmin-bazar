@@ -2,7 +2,7 @@
 export default {
   primary: '#02b55e',
   primaryDark: '#2759ff',
-  primaryLite: '#FFFFFFAA',
+  primaryLite: 'rgba(104, 109, 118,0.7)',
   primaryMoreTransLite :'rgba(99, 122, 255,0.2)',
   black: '#000',
   white: 'white',

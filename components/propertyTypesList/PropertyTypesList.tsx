@@ -3,8 +3,6 @@ import { Text, StyleSheet, Dimensions, View, ScrollView } from 'react-native';
 import type { StackProps, TabLayout, TabsTabProps } from 'tamagui'
 import {
     AnimatePresence,
-    H5,
-    SizableText,
     Tabs,
     YStack,
     styled,
@@ -114,11 +112,11 @@ const PropertyTypesList = () => {
                         value="HomeTab"
                         onInteraction={handleOnInteraction}
                     >
-                        <SizableText
+                        <Text
                             fontSize={16}
                             fontWeight={'bold'}
                             color={currentTab === 'HomeTab' ? '#1da15f' : '#ffffff'}
-                        >Home</SizableText>
+                        >Home</Text>
                     </Tabs.Tab>
                     <Tabs.Tab
                         unstyled
@@ -127,11 +125,11 @@ const PropertyTypesList = () => {
                         value="PlotsTab"
                         onInteraction={handleOnInteraction}
                     >
-                        <SizableText
+                        <Text
                             fontSize={16}
                             fontWeight={'bold'}
                             color={currentTab === 'PlotsTab' ? '#1da15f' : '#ffffff'}
-                        >Plots</SizableText>
+                        >Plots</Text>
                     </Tabs.Tab>
                     <Tabs.Tab
                         unstyled
@@ -140,11 +138,11 @@ const PropertyTypesList = () => {
                         value="CommercialTab"
                         onInteraction={handleOnInteraction}
                     >
-                        <SizableText
+                        <Text
                             fontSize={16}
                             fontWeight={'bold'}
                             color={currentTab === 'CommercialTab' ? '#1da15f' : '#ffffff'}
-                        >Commercial</SizableText>
+                        >Commercial</Text>
                     </Tabs.Tab>
                 </Tabs.List>
             </YStack>
