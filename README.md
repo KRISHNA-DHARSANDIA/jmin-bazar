@@ -1,6 +1,9 @@
-# RealEstateApp
+# RealEstateApp (user process)
 
-![RealEstateApp Logo](https://drive.google.com/file/d/1n3krC0uxM6CoFkNZTQFvq5WJsycL6_zV/view?usp=sharing)
+**🚧 UNDER CONSTRUCTION 🚧**
+
+<img src="https://github.com/KRISHNA-DHARSANDIA/jmin-bazar/assets/104525693/9c8c162a-3356-47dd-bae3-5e66fc0b6ed6" alt="RealEstateApp Logo" width="200" height="200">
+
 
 Welcome to RealEstateApp, your one-stop solution for buying, selling, and renting properties. Our application is designed to provide an intuitive and seamless experience for users looking for real estate opportunities.
 
@@ -68,10 +71,13 @@ To use the application, navigate to `http://localhost:3000` in your web browser 
 ## Screenshots
 
 ### Home Page
-![Home Page]([https://your-repository-link/screenshots/home.png](https://drive.google.com/file/d/1dCr3nr1W7SSAgH_4wqh_C5opMlqcbgwP/view?usp=sharing))
+
+<img src="https://github.com/KRISHNA-DHARSANDIA/jmin-bazar/assets/104525693/9af10ce1-282f-4a2b-94e1-c8185e32b03d" alt="RealEstateApp Logo" width="250" height="400">
+
 
 ### User Profile
-![User Profile]([https://your-repository-link/screenshots/profile.png](https://drive.google.com/file/d/1dE2mPVDShDr37004LGVjY0f4ie_f1K6A/view?usp=sharing))
+
+<img src="https://github.com/KRISHNA-DHARSANDIA/jmin-bazar/assets/104525693/e98128f9-5f6d-409b-8e73-550fbf05a532" alt="RealEstateApp Logo" width="250" height="400">
 
 ## Technologies Used
 
