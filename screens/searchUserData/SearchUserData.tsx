@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import {
     Text,
     StyleSheet,
@@ -19,9 +19,6 @@ import {
     Switch,
     XStack,
     YStack,
-    styled,
-    useTheme,
-    Theme
 } from 'tamagui';
 import Icon, { Icons } from '../../assets/Icon/Icons';
 
@@ -59,7 +56,7 @@ type Coordinate = {
 
 type RootStackParamList = {
     SearchUserData: undefined; // No parameters needed
-    MapLocation: { log: number, lat: number, onSave: (coord: Coordinate) => void }
+    MapLocation: { log: number, lat: number, previousScreen: string }
 };
 
 type SearchUserDataNavigationProp = StackNavigationProp<
@@ -69,12 +66,14 @@ type SearchUserDataNavigationProp = StackNavigationProp<
 
 type Props = {
     navigation: SearchUserDataNavigationProp;
+    route: any;
 };
 
 
 
-const SearchUserData: React.FC<Props> = ({ navigation }) => {
+const SearchUserData: React.FC<Props> = ({ navigation, route }) => {
 
+    const { params } = route;
 
     const [coordinatesdata, setCoordinates] = useState({
         logitude: 0,
@@ -114,16 +113,20 @@ const SearchUserData: React.FC<Props> = ({ navigation }) => {
         setisAdsEnable(valus);
     };
 
-    //callback function to set the lat and log value
-    const handleCodinate = (codinate: any) => {
-        setCoordinates({
-            logitude: codinate.lon,
-            latitude: codinate.lat,
-        });
 
-        console.log(codinate);
-    };
+    const prevLocation = useRef(null); // Store previous location
 
+
+    useEffect(() => {
+        if (params?.selectedLocation) {
+            const location = params.selectedLocation;
+            console.log(location);
+            setCoordinates({
+                logitude: location.longitude,
+                latitude: location.latitude,
+            });
+        }
+    }, [params?.selectedLocation]);
 
     const handleGetLocation = async () => {
         try {
@@ -142,7 +145,7 @@ const SearchUserData: React.FC<Props> = ({ navigation }) => {
                 navigation.navigate('MapLocation', {
                     lat: latitude,
                     log: logitude,
-                    onSave: handleCodinate,
+                    previousScreen: 'SearchUserData',
                 });
 
             } else {

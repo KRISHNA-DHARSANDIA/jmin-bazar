@@ -7,10 +7,7 @@ import { Button } from 'tamagui';
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 
 
-import { useNavigation } from '@react-navigation/native';
-
-
-const MapLocation = ({ route }) => {
+const MapLocation = ({ route, navigation }) => {
 
     const [lati, setlatitude] = useState(0);
     const [log, setlogitude] = useState(0);
@@ -20,7 +17,7 @@ const MapLocation = ({ route }) => {
     const latitude = params?.lat;
     const longitude = params?.log;
 
-    const { onSave } = params;
+    const { previousScreen } = route.params;
 
     const [marker, setMarker] = useState(null);
 
@@ -33,23 +30,16 @@ const MapLocation = ({ route }) => {
         setlogitude(region.longitude);
     };
 
-
-    const navigation = useNavigation();
-
     const handleSaveloc = () => {
-        // navigation.navigate('AddProperty', {
-        //     latitude: lati,
-        //     longitude: log,
-        // });
 
         const selectedLocation = {
             latitude: lati,
             longitude: log,
         };
 
-        // //callback function to set the value
-        onSave(selectedLocation);
-        navigation.goBack();
+        navigation.navigate(previousScreen, {
+            selectedLocation,
+        });
     };
 
     return (

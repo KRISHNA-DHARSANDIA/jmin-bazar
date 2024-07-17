@@ -196,9 +196,16 @@ class AddProperty extends Component {
   };
 
 
-  handleCodinate = (location) => {
-    this.setState({ longitude: location.longitude.toString(), latitude: location.latitude.toString() });
-  };
+  componentDidUpdate(prevProps) {
+    const { route } = this.props;
+    if (prevProps.route.params?.selectedLocation !== route.params?.selectedLocation) {
+      const location = route.params.selectedLocation;
+      if (location) {
+        console.log(this.props);
+        this.setState({ longitude: location.longitude.toString(), latitude: location.latitude.toString() });
+      }
+    }
+  }
 
   handlePurposeChnage = (value) => {
     this.setState({ purpose: value });
@@ -353,7 +360,7 @@ class AddProperty extends Component {
         navigation.navigate('MapLocation', {
           lat: lat_min,
           log: log_min,
-          onSave: this.handleCodinate,
+          previousScreen: 'AddProperty',
         });
       } else {
         console.error('Location data is null.');
