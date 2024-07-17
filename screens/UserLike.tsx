@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { SafeAreaView, Dimensions, StyleSheet, Text, RefreshControl, TouchableOpacity } from 'react-native';
 import { View, ScrollView, YStack, Image, Card, CardProps } from 'tamagui';
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import CustomHeader from '../components/customHeader/CustomHeader';
 
@@ -30,39 +30,62 @@ const UserLike = () => {
 
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      // Use setTimeout if needed, but wrap the fetchData call inside the useCallback
 
-      const logincheck = async () => {
-        const AysIsLogin = await AsyncStorage.getItem('LoginCheck');
-        if (AysIsLogin !== null) {
-          const result = JSON.parse(AysIsLogin);
-          if (result === true) { setisLogin(true); }
+  useEffect(() => {
+    const logincheck = async () => {
+      const AysIsLogin = await AsyncStorage.getItem('LoginCheck');
+      if (AysIsLogin !== null) {
+        const result = JSON.parse(AysIsLogin);
+        if (result === true) {
+          setisLogin(true);
+          fetchData();
         }
-        else {
-          setisLogin(false);
-          setPropertyDataList([]); // Empty The Old data after logout
-          bottomSheetRef.current?.present();
-        }
-      };
+      }
+      else {
+        setisLogin(false);
+        setPropertyDataList([]); // Empty The Old data after logout
+        bottomSheetRef.current?.present();
+      }
+    };
 
-      //make Promise check login or not 
-      logincheck().then(() => {
-        if (isLogin === true) {
-          const fetchDataWithTimeout = async () => {
-            await new Promise(resolve => setTimeout(resolve, 1000)); // 1 second
-            fetchData();
-          };
-          fetchDataWithTimeout();
-        }
-        else {
-          console.log('currly use is not login ');
-        }
-      });
+    logincheck();
+  }, []);
 
-    }, [isLogin])
-  );
+
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     // Use setTimeout if needed, but wrap the fetchData call inside the useCallback
+
+  //     const logincheck = async () => {
+  //       const AysIsLogin = await AsyncStorage.getItem('LoginCheck');
+  //       if (AysIsLogin !== null) {
+  //         const result = JSON.parse(AysIsLogin);
+  //         if (result === true) { setisLogin(true); }
+  //       }
+  //       else {
+  //         setisLogin(false);
+  //         setPropertyDataList([]); // Empty The Old data after logout
+  //         bottomSheetRef.current?.present();
+  //       }
+  //     };
+
+  //     //make Promise check login or not 
+  //     logincheck().then(() => {
+  //       if (isLogin === true) {
+  //         const fetchDataWithTimeout = async () => {
+  //           await new Promise(resolve => setTimeout(resolve, 1000)); // 1 second
+  //           fetchData();
+  //         };
+  //         fetchDataWithTimeout();
+  //       }
+  //       else {
+  //         console.log('currly use is not login ');
+  //       }
+  //     });
+
+  //   }, [isLogin])
+  // );
+
 
   const fetchData = async () => {
     setRefreshing(true);
@@ -141,7 +164,7 @@ export function DemoCard(props: CardProps &
         pid: favpid
       });
       if (response.status === 200) {
-        console.log('scuesss');
+        AsyncStorage.setItem('FavPrass', 'true');
         onFavoritePressComplete();
       } else {
         console.warn('Data is not Saved');

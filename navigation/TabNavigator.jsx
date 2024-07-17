@@ -8,22 +8,12 @@ import Icon, { Icons } from '../assets/Icon/Icons';
 import Colors from '../constants/Colors';
 import * as Animatable from 'react-native-animatable';
 import { useNavigation } from '@react-navigation/native';
-import { DrawerActions } from '@react-navigation/native';
-
-import { TabActions } from '@react-navigation/native';
-
-import { navigation } from 'react-native';
-
 //screen
 import HomeScreen from '../screens/homeScreen/HomeScreen';
 import UserInfo from '../screens/userInfo/UserInfo';
 import UserLike from '../screens/UserLike';
 import Tab1Screen from '../screens/Tab2Screen';
 import SearchUserData from '../screens/searchUserData/SearchUserData';
-import DrawerNavigator from './DrawerNavigator';
-
-
-import NavigationContext from './NavigationContext';
 
 
 const Tab = createBottomTabNavigator();
@@ -44,7 +34,9 @@ const CustomTabBarButton = (props) => {
             height: 70,
             ...styles.shadow,
         }}
-        onPress={() => navigation.navigate(SearchUserData)}
+        onPress={() => {
+            navigation.navigate('SearchUserData');
+        }}
     >
         <View style={{
             width: 60,
@@ -54,9 +46,7 @@ const CustomTabBarButton = (props) => {
             justifyContent: 'center',
             alignItems: 'center',
         }}>
-            <>
-                <Icon size={26} type={item.type} name={selected ? item.activeIcon : item.inActiveIcon} color={'white'} />
-            </>
+            <Icon size={26} type={item.type} name={selected ? item.activeIcon : item.inActiveIcon} color={'white'} />
         </View>
     </TouchableOpacity>);
 };
@@ -66,18 +56,6 @@ const TabButton = (props) => {
     const { item, onPress, accessibilityState } = props;
     const { selected } = accessibilityState;
     const viewRef = useRef(null);
-
-    // useEffect(() => {
-    //     if (selected) {
-    //         if (routeName === 'HomeScreen') {
-    //             navigation.dispatch(DrawerActions.jumpTo('TabsDrawer'));
-    //         } else if (routeName === 'UserLike') {
-    //             navigation.dispatch(DrawerActions.jumpTo('UserLikeDrawer'));
-    //             navigation.dispatch(TabActions.jumpTo('UserLike'));
-    //         }
-    //         console.log("Selected Route Name:", routeName);
-    //     }
-    // }, [selected, routeName, navigation]);
 
     useLayoutEffect(() => {
         viewRef.current.animate({
@@ -108,16 +86,16 @@ export default function TabNavigator({ route }) {
 
     const navigation = useNavigation();
 
-    const { currentScreen, setCurrentScreen } = useContext(NavigationContext);
-    const initialRoute = route?.params?.screen || 'Home';
+    // const { currentScreen, setCurrentScreen } = useContext(NavigationContext);
+    // const initialRoute = route?.params?.screen || 'HomeTab';
 
-    useEffect(() => {
-        navigation.navigate(currentScreen);
-    }, [currentScreen]);
+    // useEffect(() => {
+    //     navigation.navigate(currentScreen);
+    // }, [navigation, currentScreen]);
 
     const TabArr = [
-        { route: 'Home', label: 'Home', type: Icons.Ionicons, activeIcon: 'home', inActiveIcon: 'home-outline', component: HomeScreen, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite },
-        { route: 'Views', label: 'Property', type: Icons.MaterialCommunityIcons, activeIcon: 'island', inActiveIcon: 'island', component: Tab1Screen, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite },
+        { route: 'HomeTab', label: 'Home', type: Icons.Ionicons, activeIcon: 'home', inActiveIcon: 'home-outline', component: HomeScreen, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite },
+        { route: 'ViewsTab', label: 'Property', type: Icons.MaterialCommunityIcons, activeIcon: 'island', inActiveIcon: 'island', component: Tab1Screen, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite },
         {
             route: 'Search', label: 'Activity', type: Icons.Feather, activeIcon: 'search',
             inActiveIcon: 'search', component: SearchUserData, color: Colors.primary, alphaClr: Colors.primaryMoreTransLite,
@@ -129,10 +107,14 @@ export default function TabNavigator({ route }) {
     return (
         <Tab.Navigator
             shifting={true}
-            initialRouteName={initialRoute}
-            screenListeners={({ route }) => ({
-                tabPress: () => setCurrentScreen(route.name),
-            })}
+            initialRouteName={'HomeTab'}
+            // screenListeners={({ route }) => ({
+            //     tabPress: () => {
+            //         let rname = route.name.replaceAll('Tab', 'Drawer');
+            //         console.log(rname);
+            //         setCurrentScreen(rname);
+            //     },
+            // })}
             screenOptions={{
                 headerShown: false,
                 tabBarStyle: {
@@ -155,7 +137,9 @@ export default function TabNavigator({ route }) {
                     name={item.route}
                     component={item.component}
                     options={{
+                        //tabBarStyle: { display: item.route === 'Search' ? 'none' : 'flex' },
                         tabBarShowLabel: false,
+                        headerShown: item.route === 'Search' ? true : false,
                         tabBarIcon: ({ focused }) => (
                             <Icon size={28} type={item.type} name={focused ? item.activeIcon : item.inActiveIcon}
                                 style={{

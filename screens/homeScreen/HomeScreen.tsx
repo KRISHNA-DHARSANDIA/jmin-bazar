@@ -39,38 +39,51 @@ const HomeScreen = (props: any) => {
   const [refreshing, setRefreshing] = React.useState(false);
   const { navigation } = props;
 
-  const [isLogin, setisLogin] = useState<boolean>(false);
+  const [isLogin, setIsLogin] = useState<boolean>(false);
+  const [isFavPress, setIsFavPress] = useState<boolean>(false);
 
   const { dismissAll, dismiss } = useBottomSheetModal();
 
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
-  useFocusEffect(
-    React.useCallback(() => {
-
-      const logincheck = async () => {
-        const AysIsLogin = await AsyncStorage.getItem('LoginCheck');
-        console.log(AysIsLogin + '  Login value');
-        if (AysIsLogin !== null) {
-          const result = JSON.parse(AysIsLogin);
-          if (result === true) { setisLogin(true); }
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      try {
+        const storedLoginCheck = await AsyncStorage.getItem('LoginCheck');
+        console.log(storedLoginCheck + ' Login value');
+        if (storedLoginCheck !== null) {
+          const result = JSON.parse(storedLoginCheck);
+          if (result === true) {
+            setIsLogin(result);
+          } else {
+            setIsLogin(false);
+          }
+        } else {
+          setIsLogin(false);
         }
-        else { setisLogin(false); }
-      };
 
-      logincheck();
-
-      // const fetchDataWithTimeout = async () => {
-      //   //await new Promise(resolve => setTimeout(resolve, 1000));
-      // };
-
-      setTimeout(() => {
         fetchData();
-      }, 1000);
+      } catch (error) {
+        console.error('Error checking login status: ', error);
+        setIsLogin(false);
+      }
+    };
 
-      //fetchDataWithTimeout();
-    }, [])
-  );
+    checkLoginStatus();
+  }, []);
+
+  // useFocusEffect(() => {
+  //   const fetchFavPressValue = async () => {
+  //     const savedFavPress = await AsyncStorage.getItem('FavPrass');
+  //     if (savedFavPress === 'true') {
+  //       setIsFavPress(true);
+  //     } else {
+  //       setIsFavPress(false);
+  //     }
+  //   };
+  //   fetchFavPressValue();
+  // });
+
 
   const fetchData = async () => {
     const phoneNumber = await AsyncStorage.getItem('PhoneNumber');
@@ -94,9 +107,11 @@ const HomeScreen = (props: any) => {
     }
   };
 
-  // useMemo(() => {
-  //   fetchData();
-  // }, []);
+  useMemo(() => {
+    if (isFavPress) {
+      fetchData();
+    }
+  }, [isFavPress]);
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -136,22 +151,24 @@ const HomeScreen = (props: any) => {
         </View>
         <View>
           <View>
-            <YStack paddingVertical="$3" paddingHorizontal="$2" space="$3" {...props}>
+            <YStack paddingVertical={12} paddingHorizontal={12} space="$3" {...props}>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} >
-                <XStack space="$2" justifyContent="space-between">
-                  <Button onPress={() => handleType('buy')} alignSelf="center" icon={Airplay} size="$4">
+                <XStack space={10} justifyContent="space-between">
+                  <Button onPress={() => handleType('buy')} alignSelf="center"
+                    icon={Airplay} size={'$3'} height={40} backgroundColor={'$bglight_2'}>
                     Buy
                   </Button>
-                  <Button onPress={() => handleType('Rent')} alignSelf="center" icon={Crosshair} size="$4">
+                  <Button onPress={() => handleType('Rent')} height={40} alignSelf="center" icon={Crosshair} size="$3"
+                    backgroundColor={'$bglight_2'}>
                     Rent
                   </Button>
-                  <Button onPress={() => handleType('Plot / Land')} alignSelf="center" icon={AirVent} size="$4">
+                  <Button onPress={() => handleType('Plot / Land')} height={40} alignSelf="center" icon={AirVent} size="$3" backgroundColor={'$bglight_2'}>
                     Plot / Land
                   </Button>
-                  <Button onPress={() => handleType('Co-working Spaces')} alignSelf="center" icon={Brain} size="$4">
+                  <Button onPress={() => handleType('Co-working Spaces')} height={40} alignSelf="center" icon={Brain} size="$3" backgroundColor={'$bglight_2'}>
                     Co-working Spaces
                   </Button>
-                  <Button onPress={() => handleType('Buy Commercial')} alignSelf="center" icon={CloudSunRain} size="$4">
+                  <Button onPress={() => handleType('Buy Commercial')} height={40} alignSelf="center" icon={CloudSunRain} size="$3" backgroundColor={'$bglight_2'}>
                     Buy Commercial
                   </Button>
                 </XStack>

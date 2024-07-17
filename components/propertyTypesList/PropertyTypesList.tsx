@@ -1,12 +1,12 @@
-import React, { Component, useState, useMemo } from 'react';
-import { Text, StyleSheet, Dimensions, View, ScrollView } from 'react-native';
-import type { StackProps, TabLayout, TabsTabProps } from 'tamagui'
+import React, { useState, useMemo } from 'react';
+import type { StackProps, TabLayout, TabsTabProps } from 'tamagui';
 import {
     AnimatePresence,
     Tabs,
     YStack,
     styled,
-    ToggleGroup
+    ToggleGroup,
+    Text, View, ScrollView
 } from 'tamagui';
 import Icon, { Icons } from '../../assets/Icon/Icons';
 
@@ -107,41 +107,41 @@ const PropertyTypesList = () => {
                 >
                     <Tabs.Tab
                         unstyled
-                        paddingHorizontal="$5"
-                        paddingVertical="$2"
+                        paddingHorizontal={20}
+                        paddingVertical={10}
                         value="HomeTab"
                         onInteraction={handleOnInteraction}
                     >
                         <Text
                             fontSize={16}
                             fontWeight={'bold'}
-                            color={currentTab === 'HomeTab' ? '#1da15f' : '#ffffff'}
+                            color={currentTab === 'HomeTab' ? '#1da15f' : '#abaaaa'}
                         >Home</Text>
                     </Tabs.Tab>
                     <Tabs.Tab
                         unstyled
-                        paddingHorizontal="$4"
-                        paddingVertical="$2"
+                        paddingHorizontal={20}
+                        paddingVertical={10}
                         value="PlotsTab"
                         onInteraction={handleOnInteraction}
                     >
                         <Text
                             fontSize={16}
                             fontWeight={'bold'}
-                            color={currentTab === 'PlotsTab' ? '#1da15f' : '#ffffff'}
+                            color={currentTab === 'PlotsTab' ? '#1da15f' : '#abaaaa'}
                         >Plots</Text>
                     </Tabs.Tab>
                     <Tabs.Tab
                         unstyled
-                        paddingHorizontal="$6"
-                        paddingVertical="$2"
+                        paddingHorizontal={20}
+                        paddingVertical={10}
                         value="CommercialTab"
                         onInteraction={handleOnInteraction}
                     >
                         <Text
                             fontSize={16}
                             fontWeight={'bold'}
-                            color={currentTab === 'CommercialTab' ? '#1da15f' : '#ffffff'}
+                            color={currentTab === 'CommercialTab' ? '#1da15f' : '#abaaaa'}
                         >Commercial</Text>
                     </Tabs.Tab>
                 </Tabs.List>
@@ -216,14 +216,14 @@ const HomeTypes = [
     { value: 'house', label: 'House', icon: 'home-outline', icfamily: Icons.Ionicons },
     {
         value: 'flat', label: 'Flat', icon: 'checkmark-done-circle-outline',
-        icfamily: Icons.Ionicons
+        icfamily: Icons.Ionicons,
     },
     { value: 'upperportion', label: 'Upper Portion', icon: 'checkmark-done-circle-outline', icfamily: Icons.Ionicons },
     { value: 'lowerportion', label: 'Lower Portion', icon: 'checkmark-done-circle-outline', icfamily: Icons.Ionicons },
     { value: 'farmhouse', label: 'Farm House', icon: 'checkmark-done-circle-outline', icfamily: Icons.Ionicons },
     {
         value: 'room', label: 'Room', icon: 'checkmark-done-circle-outline',
-        icfamily: Icons.Ionicons
+        icfamily: Icons.Ionicons,
     },
     { value: 'penthouse', label: 'Penthouse', icon: 'checkmark-done-circle-outline', icfamily: Icons.Ionicons },
 ];
@@ -233,14 +233,14 @@ const PlotsTypes = [
     { value: 'house', label: 'Residental Plaot', icon: 'home-outline', icfamily: Icons.Ionicons },
     {
         value: 'flat', label: 'Commercial Ploat', icon: 'checkmark-done-circle-outline',
-        icfamily: Icons.Ionicons
+        icfamily: Icons.Ionicons,
     },
     { value: 'upperportion', label: 'Upper Portion', icon: 'checkmark-done-circle-outline', icfamily: Icons.Ionicons },
     { value: 'lowerportion', label: 'Lower Portion', icon: 'checkmark-done-circle-outline', icfamily: Icons.Ionicons },
     { value: 'farmhouse', label: 'Farm House', icon: 'checkmark-done-circle-outline', icfamily: Icons.Ionicons },
     {
         value: 'room', label: 'Room', icon: 'checkmark-done-circle-outline',
-        icfamily: Icons.Ionicons
+        icfamily: Icons.Ionicons,
     },
     { value: 'penthouse', label: 'Penthouse', icon: 'checkmark-done-circle-outline', icfamily: Icons.Ionicons },
 ];
@@ -250,28 +250,28 @@ const CommercialTypes = [
     { value: 'house', label: 'Residental Plaot', icon: 'home-outline', icfamily: Icons.Ionicons },
     {
         value: 'flat', label: 'Commercial Ploat', icon: 'checkmark-done-circle-outline',
-        icfamily: Icons.Ionicons
+        icfamily: Icons.Ionicons,
     },
     { value: 'upperportion', label: 'Upper Portion', icon: 'checkmark-done-circle-outline', icfamily: Icons.Ionicons },
     { value: 'lowerportion', label: 'Lower Portion', icon: 'checkmark-done-circle-outline', icfamily: Icons.Ionicons },
     { value: 'farmhouse', label: 'Farm House', icon: 'checkmark-done-circle-outline', icfamily: Icons.Ionicons },
     {
         value: 'room', label: 'Room', icon: 'checkmark-done-circle-outline',
-        icfamily: Icons.Ionicons
+        icfamily: Icons.Ionicons,
     },
     { value: 'penthouse', label: 'Penthouse', icon: 'checkmark-done-circle-outline', icfamily: Icons.Ionicons },
 ];
 
 const HomeTypeScroll = ({ type }: { type: string }) => {
 
-    const [SelectedType, setSelectedtype] = useState('flat');
+    const [SelectedType, setSelectedtype] = useState('all');
 
     const handleTypeChnage = (value: string) => {
         setSelectedtype(value);
         console.log(type);
     };
 
-    const renderItem = (item, index) => (
+    const renderItem = (item: any) => (
         <MyToggleGroupItemSm
             key={item.value}  // Ensure the key is unique and stable
             active={item.value === SelectedType}
@@ -291,9 +291,9 @@ const HomeTypeScroll = ({ type }: { type: string }) => {
     );
 
     // Memoize the lists to prevent unnecessary re-renders
-    const memoizedHomeTypes = useMemo(() => HomeTypes.map(renderItem), [HomeTypes, SelectedType]);
-    const memoizedPlotsTypes = useMemo(() => PlotsTypes.map(renderItem), [PlotsTypes, SelectedType]);
-    const memoizedCommercialTypes = useMemo(() => CommercialTypes.map(renderItem), [CommercialTypes, SelectedType]);
+    const memoizedHomeTypes = useMemo(() => HomeTypes.map(renderItem), [SelectedType]);
+    const memoizedPlotsTypes = useMemo(() => PlotsTypes.map(renderItem), [SelectedType]);
+    const memoizedCommercialTypes = useMemo(() => CommercialTypes.map(renderItem), [SelectedType]);
 
     return (
         <ToggleGroup
@@ -305,9 +305,9 @@ const HomeTypeScroll = ({ type }: { type: string }) => {
             backgroundColor={'$backgroundTransparent'}
             disableDeactivation={true}
         >
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} >
+            <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled" horizontal showsHorizontalScrollIndicator={false} >
                 <YStack flexDirection="row"
-                    alignItems="center" space="$3" margin={2}>
+                    alignItems="center" space={10} margin={2}>
                     {type === 'home' && memoizedHomeTypes}
                     {type === 'plots' && memoizedPlotsTypes}
                     {type === 'commercial' && memoizedCommercialTypes}

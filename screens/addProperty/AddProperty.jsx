@@ -118,8 +118,8 @@ class AddProperty extends Component {
       min_lon: 70.9628377,
       max_lon: 22.4653263,
 
-      latitude_min: 0,
-      logitude_min: 0,
+      latitude_min: 22.3053263,
+      logitude_min: 70.8028377,
 
       AreaName: [],
       btdata: [],
@@ -183,14 +183,6 @@ class AddProperty extends Component {
     }
   }
 
-  componentDidUpdate(prevProps) {
-    const { route } = this.props;
-    if (route !== prevProps.route && route.params) {
-      const { params } = route;
-      this.setState({ longitude: params.longitude.toString(), latitude: params.latitude.toString() });
-    }
-  }
-
   renderCustomDropdownIcon = () => {
     return (
       <Icon
@@ -201,6 +193,11 @@ class AddProperty extends Component {
         color="green"
       />
     );
+  };
+
+
+  handleCodinate = (location) => {
+    this.setState({ longitude: location.longitude.toString(), latitude: location.latitude.toString() });
   };
 
   handlePurposeChnage = (value) => {
@@ -297,6 +294,7 @@ class AddProperty extends Component {
           latitude_min: response.data.features[0].properties.lat,
         });
 
+
         this.setState({
           min_lat: response.data.features[0].bbox[0],
           max_lat: response.data.features[0].bbox[1],
@@ -355,6 +353,7 @@ class AddProperty extends Component {
         navigation.navigate('MapLocation', {
           lat: lat_min,
           log: log_min,
+          onSave: this.handleCodinate,
         });
       } else {
         console.error('Location data is null.');
@@ -543,8 +542,8 @@ class AddProperty extends Component {
           this.setState({ imgarrayPath: [] });
           console.log('all Done ⭐⭐⭐⭐');
 
-          navigation.navigate('HomeScreen', {
-          });
+          //navigation.navigate('HomeTab', {});
+          navigation.pop();
         })
         .catch(error => {
           console.error('Error when Data Store:', error);
@@ -626,7 +625,7 @@ class AddProperty extends Component {
                       </View>
                     </View>
                     <View>
-                      <ToggleGroup 
+                      <ToggleGroup
                         type="single"
                         // value={this.state.purpose}
                         onValueChange={this.handlePurposeChnage}

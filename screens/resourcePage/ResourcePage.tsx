@@ -32,7 +32,7 @@ export default function ResourcePage({ route, navigation }) {
   }
 
   const handleshareother = () => {
-    console.log('favclick is prass')
+    console.log('favclick is prass');
   }
 
   const [images, setImages] = useState([]);
@@ -164,7 +164,7 @@ export default function ResourcePage({ route, navigation }) {
               color="rgb(147, 214, 173)"
             />
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.bottombtn, { width: 120,flexDirection:'row',backgroundColor:'#00aa54' }]} onPress={this.StoreData}>
+          <TouchableOpacity style={[styles.bottombtn, { width: 120, flexDirection: 'row', backgroundColor: '#00aa54' }]} onPress={this.StoreData}>
             <Icon
               size={20}
               type={Icons.Ionicons}
@@ -172,7 +172,7 @@ export default function ResourcePage({ route, navigation }) {
               style={styles.backbtn}
               color="white"
             />
-            <Text style={{marginLeft:6,fontWeight:'700',fontSize:16,color:'white'}} >Call</Text>
+            <Text style={{ marginLeft: 6, fontWeight: '700', fontSize: 16, color: 'white' }} >Call</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.bottombtn} onPress={this.StoreData}>
             <Icon

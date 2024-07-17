@@ -1,22 +1,14 @@
-/* eslint-disable prettier/prettier */
-import { SafeAreaView, StyleSheet, Text, View, Dimensions, Animated } from 'react-native';
-import React, { useState, useRef } from 'react';
-import { Button, View as tView } from 'tamagui';
+
+import { SafeAreaView, StyleSheet, View } from 'react-native';
+import React, { useState } from 'react';
+import { Button } from 'tamagui';
 
 //map
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
-const screenWidth = Dimensions.get('window').width;
-const screenHeight = Dimensions.get('window').height;
+
 
 import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-//Api
-// import axios from 'axios';
-
-// const axiosInstance = axios.get({
-//     baseURL: 'http://192.168.201.153:7237/api/',
-// });
 
 const MapLocation = ({ route }) => {
 
@@ -28,8 +20,9 @@ const MapLocation = ({ route }) => {
     const latitude = params?.lat;
     const longitude = params?.log;
 
+    const { onSave } = params;
+
     const [marker, setMarker] = useState(null);
-    //const mapViewRef = useRef(null);
 
     const handleRegionChange = (region) => {
         setMarker(region);
@@ -40,16 +33,24 @@ const MapLocation = ({ route }) => {
         setlogitude(region.longitude);
     };
 
+
     const navigation = useNavigation();
 
     const handleSaveloc = () => {
-        navigation.navigate('AddProperty', {
+        // navigation.navigate('AddProperty', {
+        //     latitude: lati,
+        //     longitude: log,
+        // });
+
+        const selectedLocation = {
             latitude: lati,
             longitude: log,
-        });
-    };
+        };
 
-    //const customMarkerIcon = require('./path/to/customMarkerIcon.png');
+        // //callback function to set the value
+        onSave(selectedLocation);
+        navigation.goBack();
+    };
 
     return (
         <SafeAreaView style={styles.container}>

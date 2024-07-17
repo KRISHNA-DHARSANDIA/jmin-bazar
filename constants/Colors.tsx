@@ -1,9 +1,8 @@
-/* eslint-disable prettier/prettier */
 export default {
-  primary: '#02b55e',
+  primary: '#00aa54',
   primaryDark: '#2759ff',
   primaryLite: 'rgba(104, 109, 118,0.7)',
-  primaryMoreTransLite :'rgba(99, 122, 255,0.2)',
+  primaryMoreTransLite: 'rgba(99, 122, 255,0.2)',
   black: '#000',
   white: 'white',
   accent: '#112233',
@@ -22,11 +21,11 @@ export default {
   gold: 'gold',
   line: '#282C35',
   darkGray: '#999999',
-  lightblue:'#40A2D8',
+  lightblue: '#40A2D8',
 
   //text color
-  textdark:'#263243',
-  textlight:'#b1b3b7',
+  textdark: '#263243',
+  textlight: '#b1b3b7',
 
   darkOverlayColor: 'rgba(0, 0, 0, 0.4)',
   darkOverlayColor2: 'rgba(0, 0, 0, 0.8)',

@@ -9,6 +9,8 @@ import axiosInstance from '../../axiosInstance';
 import Icon, { Icons } from '../../assets/Icon/Icons';
 import Colors from '../../constants/Colors';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 const RecentCard = (props: CardProps & { onFavoritePressComplete: any, navigation: any, isLogin: boolean }) => {
 
     const { propertyData, navigation, isLogin, onFavoritePressComplete, ...restProps } = props;
@@ -23,6 +25,7 @@ const RecentCard = (props: CardProps & { onFavoritePressComplete: any, navigatio
             });
             if (response) {
                 onFavoritePressComplete();
+                //AsyncStorage.setItem('FavPrass', 'true');
             } else {
                 console.warn('Data is not Saved');
             }

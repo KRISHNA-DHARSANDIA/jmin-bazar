@@ -235,7 +235,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ route }) => {
           <View style={Styles.UsiDownContainer}>
             <View>
               <View>
-                <XStack $sm={{ flexDirection: 'column' }} paddingHorizontal="$0" space>
+                <XStack $sm={{ flexDirection: 'column' }} paddingHorizontal="$0">
                   <ListCollectionFeed />
                 </XStack>
               </View>
@@ -270,7 +270,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ route }) => {
                               size={18}
                             />
                           </YGroup.Item>
-                          <Separator marginVertical={0} />
+                          <Separator marginVertical={0} borderColor={'$borderColor'}/>
                           <YGroup.Item>
                             <ListItem
                               hoverTheme
@@ -303,7 +303,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ route }) => {
 // User FeedBack related List
 function ListCollectionFeed() {
   return (
-    <YGroup alignSelf="center" style={[Styles.USiListCollection]} size="$5" separator={<Separator />}>
+    <YGroup alignSelf="center" style={[Styles.USiListCollection]} size="$5" separator={<Separator borderColor={'$borderColor'} />}>
       <YGroup.Item>
         <ListItem
           title="Are You finding us Helpful"

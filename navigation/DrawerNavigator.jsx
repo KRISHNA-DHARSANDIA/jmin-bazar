@@ -15,74 +15,44 @@ import { useNavigationState } from '@react-navigation/native';
 import Tab2Screen from '../screens/Tab2Screen';
 //import { CustomeDrawerContent } from './CustomeDrawerContent';
 
-import NavigationContext from './NavigationContext';
+import { createStackNavigator } from '@react-navigation/stack';
+const Stack = createStackNavigator();
+
+// import NavigationContext from './NavigationContext';
 
 const Drawer = createDrawerNavigator();
 
-const CustomeDrawerContent = (props) => {
-  const { navigation } = props;
+function DrawerNavigator(props) {
 
-  const { routeNames, index } = props.state;
-  const focused = routeNames[index];
+  //const { currentScreen, setCurrentScreen } = useContext(NavigationContext);
 
-  console.log(focused);
-
-  return (
-    <DrawerContentScrollView {...props}>
-      <DrawerItem
-        label={'Home'}
-        onPress={() => navigation.navigate('HomeScreen')}
-      //focused={focused === 'HomeScreen'}
-      />
-      <DrawerItem
-        label={'New Projects'}
-        onPress={() => navigation.navigate('Views')}
-      />
-      <DrawerItem
-        label={'Add New Property'}
-        onPress={() => navigation.navigate('AddProperty')}
-      />
-      <DrawerItem
-        label={'Search Properties'}
-        onPress={() => navigation.navigate('Search')}
-      />
-      <DrawerItem
-        label={'Shortlists'}
-        onPress={() => navigation.navigate('UserLike')}
-      />
-      <DrawerItem
-        label={'Profile'}
-        onPress={() => navigation.navigate('UserInfo')}
-      />
-    </DrawerContentScrollView>
-  );
-};
-
-export default function DrawerNavigator(props) {
-
-  const { currentScreen, setCurrentScreen } = useContext(NavigationContext);
-
-  useEffect(() => {
-    props.navigation.navigate(currentScreen);
-  }, [currentScreen]);
+  // useEffect(() => {
+  //   props.navigation.navigate(currentScreen);
+  // }, [props.navigation, currentScreen]);
 
   return (
-    <Drawer.Navigator
-      initialRouteName="Home"
-    //drawerContent={props => <CustomeDrawerContent {...props} />}
-    >
-      <Drawer.Screen name="Home" component={TabNavigator} options={{ headerShown: false }}
-        listeners={{ drawerItemPress: () => setCurrentScreen('Home') }}
+    <Drawer.Navigator initialRouteName="HomeDrawer">
+      <Drawer.Screen
+        name="HomeDrawer"
+        component={TabNavigator}
+        options={{ headerShown: false, title: 'Home' }}
       />
       <Drawer.Screen
-        name="Views"
-        component={TabNavigator}
-        options={{ headerShown: false }}
-        initialParams={{ screen: 'Views' }}
-        listeners={{
-          drawerItemPress: () => setCurrentScreen('Views'),
-        }}
+        name="MyProperties"
+        component={MyProperties}
+        options={{ headerShown: true, title: 'Your Property' }}
       />
+      {/* <Drawer.Screen
+        name="ViewsDrawer"
+        component={TabNavigator}
+        options={{ headerShown: false, label: 'Views' }}
+        initialParams={{ screen: 'ViewsTab' }}
+        listeners={{
+          drawerItemPress: () => setCurrentScreen('ViewsTab'),
+        }}
+      /> */}
     </Drawer.Navigator>
   );
 };
+
+export default DrawerNavigator;
