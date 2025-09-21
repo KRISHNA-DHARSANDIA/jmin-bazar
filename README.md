@@ -79,6 +79,10 @@ To use the application, navigate to `http://localhost:3000` in your web browser 
 
 <img src="https://github.com/KRISHNA-DHARSANDIA/jmin-bazar/assets/104525693/e98128f9-5f6d-409b-8e73-550fbf05a532" alt="RealEstateApp Logo" width="250" height="400">
 
+
+https://github.com/user-attachments/assets/6deb0015-cf3e-4746-b667-9cf299556bf1
+
+
 ## Technologies Used
 
 ### Backend
